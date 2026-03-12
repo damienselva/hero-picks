@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hero Picks — Marvel &amp; DC</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --marvel: #E23636; --dc: #0476D9; --gold: #FFD700; --bg: #0a0a0f; --surface: #12121a; --card: #1a1a28; --border: rgba(255,255,255,0.08); --text: #f0f0f0; --muted: #888; }
+  body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; }
+  .app { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem; }
+  .header { text-align: center; margin-bottom: 1.5rem; }
+  .header h1 { font-family: 'Bebas Neue', cursive; font-size: clamp(2.5rem, 8vw, 5rem); letter-spacing: 4px; line-height: 1; background: linear-gradient(135deg, #E23636, #FFD700, #0476D9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .header p { color: var(--muted); font-size: 1rem; margin-top: 0.4rem; }
+  .header .creator { font-family: 'Bebas Neue', cursive; letter-spacing: 2px; font-size: 0.95rem; margin-top: 0.35rem; background: linear-gradient(90deg, #E23636, #FFD700, #0476D9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  .hotw { border-radius: 14px; padding: 1.5rem; margin-bottom: 2rem; position: relative; overflow: hidden; }
+  .hotw.marvel { background: linear-gradient(135deg, rgba(226,54,54,0.18) 0%, rgba(226,54,54,0.05) 100%); border: 1.5px solid rgba(226,54,54,0.4); }
+  .hotw.dc { background: linear-gradient(135deg, rgba(4,118,217,0.18) 0%, rgba(4,118,217,0.05) 100%); border: 1.5px solid rgba(4,118,217,0.4); }
+  .hotw-label { font-family: 'Bebas Neue', cursive; letter-spacing: 3px; font-size: 0.8rem; color: var(--gold); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem; }
+  .hotw-label::before, .hotw-label::after { content: ''; flex: 1; height: 1px; background: rgba(255,215,0,0.3); }
+  .hotw-inner { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .hotw-emoji { font-size: 4.5rem; line-height: 1; flex-shrink: 0; }
+  .hotw-info { flex: 1; min-width: 180px; }
+  .hotw-name { font-family: 'Bebas Neue', cursive; font-size: 2.4rem; letter-spacing: 3px; line-height: 1; }
+  .hotw-alias { color: var(--muted); font-size: 0.9rem; margin: 0.2rem 0 0.5rem; }
+  .hotw-teaser { font-size: 0.88rem; color: #bbb; line-height: 1.6; }
+  .hotw-badge { display: inline-block; font-family: 'Bebas Neue', cursive; letter-spacing: 2px; font-size: 0.75rem; padding: 0.15rem 0.7rem; border-radius: 4px; margin-bottom: 0.4rem; }
+  .hotw-badge.marvel { background: rgba(226,54,54,0.2); color: var(--marvel); border: 1px solid var(--marvel); }
+  .hotw-badge.dc { background: rgba(4,118,217,0.2); color: var(--dc); border: 1px solid var(--dc); }
+  .hotw-btn { margin-top: 0.75rem; font-family: 'Bebas Neue', cursive; letter-spacing: 2px; font-size: 1rem; padding: 0.45rem 1.2rem; border-radius: 6px; border: none; background: var(--gold); color: #111; cursor: pointer; transition: opacity 0.2s; }
+  .hotw-btn:hover { opacity: 0.85; }
+  .hotw-week { position: absolute; top: 1rem; right: 1rem; font-size: 0.72rem; color: var(--muted); letter-spacing: 1px; }
+  .next-change { font-size: 0.75rem; color: var(--muted); margin-top: 0.6rem; }
+
+  .filter-bar { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .filter-btn { font-family: 'Bebas Neue', cursive; letter-spacing: 2px; font-size: 1rem; padding: 0.4rem 1.2rem; border-radius: 4px; border: 2px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.2s; }
+  .filter-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+  .filter-btn.active-all { border-color: var(--gold); color: var(--gold); }
+  .filter-btn.active-marvel { border-color: var(--marvel); color: var(--marvel); }
+  .filter-btn.active-dc { border-color: var(--dc); color: var(--dc); }
+  .search-bar { display: flex; justify-content: center; margin-bottom: 1.5rem; }
+  .search-bar input { width: 100%; max-width: 400px; background: var(--surface); border: 1.5px solid var(--border); border-radius: 6px; padding: 0.55rem 1rem; color: var(--text); font-family: 'Barlow', sans-serif; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+  .search-bar input:focus { border-color: var(--gold); }
+  .search-bar input::placeholder { color: var(--muted); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.75rem; }
+  .hero-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; padding: 0.9rem 0.6rem; text-align: center; cursor: pointer; transition: transform 0.18s, border-color 0.18s; position: relative; overflow: hidden; }
+  .hero-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.25); }
+  .hero-card.marvel { --accent: var(--marvel); }
+  .hero-card.dc { --accent: var(--dc); }
+  .hero-card.selected { border-color: var(--gold) !important; box-shadow: 0 0 18px rgba(255,215,0,0.3); }
+  .hero-card.hotw-card { border-color: var(--gold) !important; }
+  .hero-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent); }
+  .hotw-crown { position: absolute; top: 6px; right: 6px; font-size: 0.8rem; }
+  .hero-emoji { font-size: 2.2rem; margin-bottom: 0.4rem; display: block; line-height: 1.2; }
+  .hero-name { font-family: 'Bebas Neue', cursive; font-size: 0.95rem; letter-spacing: 1px; color: var(--text); line-height: 1.2; }
+  .hero-universe { font-size: 0.7rem; font-weight: 600; letter-spacing: 1.5px; margin-top: 0.2rem; color: var(--accent); }
+
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--card); border-radius: 16px; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; border: 2px solid var(--gold); position: relative; animation: popIn 0.25s ease-out; }
+  @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal-top { padding: 2rem 2rem 1rem; text-align: center; position: relative; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: var(--surface); border: 1.5px solid var(--border); color: var(--muted); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .modal-close:hover { color: var(--text); border-color: rgba(255,255,255,0.3); }
+  .hotw-indicator { font-family: 'Bebas Neue', cursive; letter-spacing: 2px; font-size: 0.8rem; color: var(--gold); margin-bottom: 0.5rem; }
+  .modal-hero-emoji { font-size: 4rem; display: block; margin-bottom: 0.5rem; }
+  .modal-name { font-family: 'Bebas Neue', cursive; font-size: 2.5rem; letter-spacing: 3px; }
+  .modal-alias { font-size: 0.9rem; color: var(--muted); margin-top: 0.2rem; }
+  .modal-badge { display: inline-block; font-family: 'Bebas Neue', cursive; letter-spacing: 2px; font-size: 0.85rem; padding: 0.2rem 0.8rem; border-radius: 4px; margin-top: 0.5rem; }
+  .modal-badge.marvel { background: rgba(226,54,54,0.2); color: var(--marvel); border: 1px solid var(--marvel); }
+  .modal-badge.dc { background: rgba(4,118,217,0.2); color: var(--dc); border: 1px solid var(--dc); }
+  .modal-body { padding: 0 1.5rem 1.5rem; }
+  .section { margin-bottom: 1.2rem; }
+  .section-title { font-family: 'Bebas Neue', cursive; font-size: 1.1rem; letter-spacing: 2px; color: var(--gold); margin-bottom: 0.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.3rem; }
+  .section p { font-size: 0.92rem; line-height: 1.65; color: #ccc; }
+  .facts-list { list-style: none; }
+  .facts-list li { font-size: 0.88rem; color: #ccc; padding: 0.4rem 0; border-bottom: 1px solid var(--border); line-height: 1.5; display: flex; gap: 0.6rem; }
+  .facts-list li::before { content: '★'; color: var(--gold); font-size: 0.75rem; flex-shrink: 0; margin-top: 0.1rem; }
+  .fav-btn { width: 100%; margin-top: 1rem; padding: 0.7rem; font-family: 'Bebas Neue', cursive; letter-spacing: 2px; font-size: 1.1rem; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; background: var(--gold); color: #111; }
+  .fav-btn:hover { opacity: 0.85; transform: scale(1.02); }
+  .fav-btn.already { background: var(--surface); color: var(--gold); border: 2px solid var(--gold); }
+  .favorites-section { margin-top: 2.5rem; }
+  .favorites-section h2 { font-family: 'Bebas Neue', cursive; font-size: 1.8rem; letter-spacing: 3px; color: var(--gold); margin-bottom: 1rem; }
+  .fav-grid { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .fav-pill { background: var(--surface); border: 1.5px solid var(--gold); border-radius: 20px; padding: 0.3rem 0.8rem; font-size: 0.85rem; color: var(--gold); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; }
+  .fav-pill:hover { background: rgba(255,215,0,0.1); }
+  .fav-pill .remove { color: var(--muted); font-size: 0.8rem; }
+  .empty { text-align: center; color: var(--muted); padding: 2rem; font-size: 0.95rem; grid-column: 1/-1; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>Hero Picks</h1>
+    <p>Choose your favourites from the Marvel &amp; DC universe</p>
+    <p class="creator">🦸 A Damien Selva Creation</p>
+  </div>
+  <div id="hotw-container"></div>
+  <div class="filter-bar">
+    <button class="filter-btn active-all" onclick="setFilter('all', this)">All Heroes</button>
+    <button class="filter-btn" onclick="setFilter('marvel', this)">Marvel</button>
+    <button class="filter-btn" onclick="setFilter('dc', this)">DC</button>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="search" placeholder="Search heroes..." oninput="renderGrid()" />
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="favorites-section" id="fav-section" style="display:none;">
+    <h2>⭐ My Favourites</h2>
+    <div class="fav-grid" id="fav-grid"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-top">
+      <button class="modal-close" onclick="closeModalBtn()">✕</button>
+      <div class="hotw-indicator" id="m-hotw" style="display:none;">★ Hero of the Week ★</div>
+      <span class="modal-hero-emoji" id="m-emoji"></span>
+      <div class="modal-name" id="m-name"></div>
+      <div class="modal-alias" id="m-alias"></div>
+      <span class="modal-badge" id="m-badge"></span>
+    </div>
+    <div class="modal-body">
+      <div class="section"><div class="section-title">Origin Story</div><p id="m-origin"></p></div>
+      <div class="section"><div class="section-title">Powers &amp; Abilities</div><p id="m-powers"></p></div>
+      <div class="section"><div class="section-title">Fun Facts</div><ul class="facts-list" id="m-facts"></ul></div>
+      <button class="fav-btn" id="fav-btn" onclick="toggleFav()"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const heroes = [
+  { id: 1, name: "Spider-Man", alias: "Peter Parker", universe: "marvel", emoji: "🕷️", origin: "Bitten by a radioactive spider during a high school field trip, Peter Parker gained superhuman strength, agility, and the ability to cling to walls. After failing to stop a thief who later killed his Uncle Ben, he adopted the mantra: 'With great power comes great responsibility.'", powers: "Wall-crawling, spider-sense (precognitive danger detection), superhuman strength (can lift 10+ tons), agility, and web-shooting via self-made web-shooters.", facts: ["Created by Stan Lee and Steve Ditko in 1962", "His web-shooters are his own invention — he's a genius-level chemist", "Has been a member of the Avengers, Fantastic Four, and the X-Men", "There are over 50 alternate Spider-Men across the multiverse"] },
+  { id: 2, name: "Iron Man", alias: "Tony Stark", universe: "marvel", emoji: "🦾", origin: "Billionaire weapons manufacturer Tony Stark was captured by terrorists and forced to build a weapon. Instead, he secretly built a powered suit of armour to escape. He refined it into the Mark series of Iron Man suits, dedicating himself to protecting the world.", powers: "Genius-level intellect (IQ 270+), powered armour granting flight, repulsor beams, superhuman strength, energy weapons, and an AI assistant (J.A.R.V.I.S./F.R.I.D.A.Y.).", facts: ["Tony was inspired in part by Howard Hughes", "The first Iron Man suit weighed over 90 pounds", "He is fluent in multiple languages and a master engineer", "His arc reactor technology can power a city block for a year"] },
+  { id: 3, name: "Thor", alias: "Thor Odinson", universe: "marvel", emoji: "⚡", origin: "Born the son of Odin, king of Asgard, Thor was banished to Earth after acting arrogantly. Only by proving himself worthy could he lift his enchanted hammer Mjolnir. He eventually regained his powers and became one of Earth's mightiest heroes.", powers: "Asgardian physiology granting superhuman strength, durability, and longevity. Mjolnir grants flight, weather manipulation, and lightning control. Also wields Stormbreaker.", facts: ["Thor debuted in Journey into Mystery #83 in 1962", "He is over 1,500 years old", "Several others have been deemed worthy to lift Mjolnir, including Captain America", "His half-brother Loki is his most recurring villain"] },
+  { id: 4, name: "Captain America", alias: "Steve Rogers", universe: "marvel", emoji: "🛡️", origin: "A frail young man from Brooklyn, Steve Rogers was deemed unfit for WWII military service but volunteered for a secret Super Soldier programme. Injected with the Super Soldier Serum and bombarded with Vita-Rays, he became a perfect physical specimen.", powers: "Enhanced strength, speed, endurance, agility, and healing factor. His vibranium shield can absorb any impact and be used as a devastating weapon.", facts: ["Steve was frozen in ice for approximately 70 years", "His shield is made of a vibranium-steel alloy — completely unique", "He has led the Avengers more times than anyone else", "He was the first superhero to appear on the cover of a US comic in 1941"] },
+  { id: 5, name: "Black Widow", alias: "Natasha Romanoff", universe: "marvel", emoji: "🕸️", origin: "Trained from childhood in the Red Room, a covert Soviet programme, Natasha Romanoff became the world's greatest espionage operative. She later defected and joined S.H.I.E.L.D., becoming a founding Avenger.", powers: "Master martial artist, acrobat, and spy. Uses Widow's Bite electroshock wrist devices. Slowed ageing due to Red Room biotech enhancements. Speaks dozens of languages.", facts: ["She has had over 30 aliases across her career", "Her red ledger — referring to past actions — is a recurring theme", "She was once brainwashed to believe she was a ballerina", "Her real age is ambiguous, but she may be over 80"] },
+  { id: 6, name: "Hulk", alias: "Bruce Banner", universe: "marvel", emoji: "💚", origin: "Physicist Dr. Bruce Banner was caught in the blast of a gamma bomb he designed, absorbing a massive dose of gamma radiation. The trauma caused him to transform into the Hulk — a massive green creature that embodies his repressed rage.", powers: "The madder Hulk gets, the stronger he gets — potentially limitless strength. Near-invulnerability, extreme healing factor, and thunderclap capable of levelling buildings.", facts: ["Hulk was originally grey in his first appearance — a printing error made him green", "He can jump into Earth orbit unaided", "Banner holds seven PhDs", "Professor Hulk merges Banner's mind with Hulk's body for perfect control"] },
+  { id: 7, name: "Black Panther", alias: "T'Challa", universe: "marvel", emoji: "🐾", origin: "As king of the technologically advanced African nation of Wakanda, T'Challa consumes the heart-shaped herb during a sacred ritual to receive the power of the Black Panther — protector of his people for generations.", powers: "Enhanced strength, speed, and senses from the heart-shaped herb. Vibranium suit that absorbs kinetic energy and returns it as force. Genius-level intellect and master combatant.", facts: ["Black Panther was the first Black superhero in mainstream American comics (1966)", "Wakanda is the world's only source of vibranium", "He is one of the eight smartest people on Earth in the Marvel universe", "He has briefly held the Power Stone"] },
+  { id: 8, name: "Doctor Strange", alias: "Stephen Strange", universe: "marvel", emoji: "🔮", origin: "Brilliant but arrogant neurosurgeon Dr. Stephen Strange suffered nerve damage in a car accident, ending his career. Seeking a cure, he found the Ancient One in Nepal and became Earth's Sorcerer Supreme after years of magical training.", powers: "Master of the mystic arts: astral projection, time manipulation via the Eye of Agamotto, dimension-hopping, energy shields, and powerful spells.", facts: ["Strange has memorised the entirety of Kamar-Taj's library", "His Cloak of Levitation is semi-sentient and chooses its wearer", "He once spent 14,000,605 alternate timelines looking for a way to beat Thanos", "He beat Dormammu by trapping him in a time loop"] },
+  { id: 9, name: "Wolverine", alias: "James Logan Howlett", universe: "marvel", emoji: "🦴", origin: "Born in the 1880s, James Howlett discovered he had a mutant healing factor and retractable bone claws. His claws were later coated with indestructible adamantium metal in the Weapon X programme.", powers: "Indestructible adamantium skeleton and claws, superhuman healing factor (can regrow organs), heightened senses, and over 130 years of combat experience.", facts: ["Wolverine is over 140 years old", "His adamantium skeleton weighs more than a normal person's entire body", "He has been a samurai, a secret agent, and a teacher", "He is one of very few characters who can remember the original Marvel timeline"] },
+  { id: 10, name: "Captain Marvel", alias: "Carol Danvers", universe: "marvel", emoji: "🌟", origin: "Air Force pilot Carol Danvers absorbed energy from a Kree device during an explosion, rewriting her DNA and granting her incredible powers. She later discovered her Kree heritage before reclaiming her identity as Captain Marvel.", powers: "Binary form grants flight at near light speed, energy projection, superhuman strength, and immunity to most toxins. One of the physically strongest heroes in the universe.", facts: ["She can survive and fly unaided in deep space", "Her Binary power is fuelled by a white hole", "She was an ace pilot before gaining powers", "Nick Fury contacted her via a modified pager at the end of Infinity War"] },
+  { id: 11, name: "Scarlet Witch", alias: "Wanda Maximoff", universe: "marvel", emoji: "🔴", origin: "Born in Sokovia, Wanda was experimented on by HYDRA using the Mind Stone, one of the Infinity Stones. This awakened her latent mutant abilities, turning her into a powerful chaos magic wielder.", powers: "Chaos magic, reality warping, telepathy, telekinesis, hex bolts, and probability manipulation. One of the most powerful beings in the multiverse.", facts: ["She rewrote reality to create an entire world called House of M", "Her powers are fuelled by emotional states", "In some stories she is Magneto's daughter", "She has been an Avenger, a villain, and everything in between"] },
+  { id: 12, name: "Ant-Man", alias: "Scott Lang", universe: "marvel", emoji: "🐜", origin: "Scott Lang was a thief who broke into the home of scientist Hank Pym and stole the Ant-Man suit to save his daughter. Pym, recognising Scott's potential, mentored him as the new Ant-Man.", powers: "Pym Particles allow size reduction to ant size while retaining full strength. Can grow to enormous size as Giant-Man. Communicates with ants via a cybernetic helmet.", facts: ["Scott can shrink to the Quantum Realm — smaller than atoms", "In Giant-Man form he can reach 65 feet tall", "He once crawled inside Iron Man's suit to short-circuit it from inside", "His daughter Cassie later becomes the hero Stature"] },
+  { id: 13, name: "Hawkeye", alias: "Clint Barton", universe: "marvel", emoji: "🏹", origin: "Abandoned as a child and raised in a circus, Clint Barton mastered archery. He initially operated as a villain before being inspired by Iron Man to become a hero.", powers: "No superhuman powers. The world's greatest marksman. Uses a vast array of trick arrows: explosive, EMP, sonic, and more.", facts: ["He is profoundly deaf in many stories and uses hearing aids", "He can hit targets without looking", "He trained the West Coast Avengers and the New Warriors", "He once beat Thanos with a regular arrow at close range"] },
+  { id: 14, name: "Falcon", alias: "Sam Wilson", universe: "marvel", emoji: "🦅", origin: "Sam Wilson, a former military pararescueman, was equipped by Captain America with a special EXO-7 Falcon winged harness. He became one of Cap's closest allies and eventually took up the Captain America mantle.", powers: "EXO-7 Falcon suit grants flight via retractable metal wings. Uses drones called Redwing. Expert combatant. As Captain America, wields the vibranium shield.", facts: ["Sam can see through Redwing's eyes in real time", "He was the first Black Captain America in the main Marvel timeline", "He shares a mental link with birds", "He turned down the Captain America title twice before accepting"] },
+  { id: 15, name: "War Machine", alias: "James Rhodes", universe: "marvel", emoji: "🤖", origin: "Colonel James Rhodes was Tony Stark's best friend and US Air Force liaison. When Stark was incapacitated, Rhodes donned the Iron Man armour. Tony later built him a customised heavy-weapons variant called War Machine.", powers: "Heavily armoured suit with shoulder mini-gun, missile launchers, repulsors, and unibeam. Military training and combat experience supplements the tech.", facts: ["Rhodey is a licensed military pilot and decorated veteran", "The War Machine armour weighs approximately 20 tons", "He was temporarily paralysed but later restored", "He has been an Avenger and a member of the Iron Patriot programme"] },
+  { id: 16, name: "Vision", alias: "Vision", universe: "marvel", emoji: "💎", origin: "Created by Ultron and powered by the Mind Stone, Vision was intended as a weapon. However, he immediately sided with the Avengers, developing humanity and feelings of his own.", powers: "Density manipulation (can become intangible or diamond-hard), flight, energy projection from the Mind Stone, and computer-level intellect.", facts: ["He can phase his hand through a person's chest, solidify it, and remove it", "He was briefly married to Scarlet Witch in their own suburban reality", "He once killed a man and felt genuine remorse", "After the Mind Stone was removed, a reconstructed version called White Vision exists"] },
+  { id: 17, name: "Nick Fury", alias: "Nicholas J. Fury", universe: "marvel", emoji: "🕶️", origin: "A decorated WWII soldier who survived thanks to the Infinity Formula slowing his ageing, Nick Fury founded and led S.H.I.E.L.D. for decades, orchestrating global defence against superhuman threats.", powers: "No superhuman powers. Tactical mastermind, expert spy, and hand-to-hand combatant. His left eye was damaged in an explosion and covered by his iconic eyepatch.", facts: ["He personally assembled the original Avengers initiative", "He faked his own death at least three times", "He has operated as a spy since WWII — over 70 years", "He has a secret son, Nick Fury Jr."] },
+  { id: 18, name: "Deadpool", alias: "Wade Wilson", universe: "marvel", emoji: "💬", origin: "Ex-Special Forces mercenary Wade Wilson was diagnosed with terminal cancer and enrolled in the Weapon X programme. Experimental procedures gave him a powerful healing factor — but left his skin horribly scarred.", powers: "Unkillable healing factor (can regrow limbs), peak human strength and agility, expert marksman and swordsman. He is also fully aware he is a fictional character!", facts: ["He is aware he lives in a fictional universe", "He once killed the entire Marvel universe — twice — in his own comics", "His healing factor and cancer are in constant battle, causing his scarring", "He is best friends with Spider-Man and loves Captain America"] },
+  { id: 19, name: "Shang-Chi", alias: "Xu Shang-Chi", universe: "marvel", emoji: "🥋", origin: "Raised by his father Xu Wenwu — wielder of the mystical Ten Rings — as an assassin, Shang-Chi eventually broke free. He inherited the Ten Rings after his father's death and became a new kind of hero.", powers: "Master of multiple martial arts. The Ten Rings grant energy blasts, flight, shield generation, and the mythical Soulfire energy.", facts: ["The Ten Rings are thousands of years old, origin unknown", "He was trained to be the world's greatest assassin from age seven", "His sister Xu Xialing now controls the Ten Rings organisation", "He is one of Marvel's most skilled hand-to-hand combatants"] },
+  { id: 20, name: "Moon Knight", alias: "Marc Spector", universe: "marvel", emoji: "🌙", origin: "Mercenary Marc Spector died in Egypt and was resurrected by the moon god Khonshu. He became the Moon Knight — Avatar of Khonshu — battling villains of the night, with multiple different personalities.", powers: "Enhanced strength tied to lunar cycles (strongest at full moon). Crescent throwing darts, grappling hook, and the Mantle of Khonshu armour.", facts: ["His personalities include millionaire Steven Grant and taxi driver Jake Lockley", "He deliberately allows himself to be hit to feel less pain", "Khonshu has been imprisoned by other Marvel gods", "He is sometimes called Marvel's Batman but is far more complex"] },
+  { id: 21, name: "Batman", alias: "Bruce Wayne", universe: "dc", emoji: "🦇", origin: "As a child, Bruce Wayne watched his parents shot dead by a mugger in Gotham City's Crime Alley. He swore an oath to wage a one-man war on crime, training his body and mind to the peak of human ability.", powers: "No superhuman powers. Peak human strength, speed, and agility. World's greatest detective. Master of 127 martial arts. Expert in psychology, chemistry, and forensics. Vast wealth funds his arsenal.", facts: ["He has contingency plans to defeat every member of the Justice League", "He has trained every major DC sidekick at some point", "He deduced Superman's secret identity just by observing him", "He once beat the entire Justice League using files stored in Brother Eye"] },
+  { id: 22, name: "Superman", alias: "Clark Kent", universe: "dc", emoji: "🦸", origin: "Born Kal-El on the doomed planet Krypton, he was rocketed to Earth as an infant. Raised as Clark Kent by farmers in Smallville, Kansas, he discovered his incredible powers all came from Earth's yellow sun.", powers: "Solar-powered abilities including flight, near-unlimited strength, super speed, invulnerability, heat vision, freeze breath, x-ray vision, super hearing, and super intelligence.", facts: ["His only weaknesses are kryptonite and magic", "He has held the sun together with his bare hands", "Lois Lane suspected Clark was Superman for years before he confirmed it", "He is the founding member of the Justice League"] },
+  { id: 23, name: "Wonder Woman", alias: "Diana Prince", universe: "dc", emoji: "⚔️", origin: "Princess Diana of Themyscira, the Amazon island, left her paradise home to fight for humanity in the wider world. She is either sculpted from clay and given life by Zeus, or born as Zeus's daughter depending on the story.", powers: "Amazon physiology: superhuman strength, speed, endurance, and agility. Lasso of Truth, indestructible bracelets, and the Sword of Athena. A trained warrior since childhood.", facts: ["She was originally sent to the human world during WWII", "Her lasso compels absolute truth from anyone it touches", "She is one of the few beings who can take a punch from Superman and hit back equally hard", "She speaks over 100 languages, including ancient dead languages"] },
+  { id: 24, name: "The Flash", alias: "Barry Allen", universe: "dc", emoji: "⚡", origin: "Forensic scientist Barry Allen was struck by lightning in his lab while chemicals showered him at the same time. He woke up with the ability to move at incredible speed, connected to the mysterious Speed Force energy field.", powers: "Connection to the Speed Force allows movement at near-light speeds, vibrating through solid matter, creating tornado-level winds, time travel, and an infinite mass punch at top speed.", facts: ["He can vibrate his molecules to phase through solid objects", "His infinite mass punch hits with the force of a white dwarf star", "He once ran so fast he went back in time and became the lightning bolt that hit him", "He sacrificed himself to save the entire multiverse"] },
+  { id: 25, name: "Aquaman", alias: "Arthur Curry", universe: "dc", emoji: "🔱", origin: "Half-human, half-Atlantean, Arthur Curry was raised by his lighthouse keeper father. He eventually discovered his royal heritage and claimed the throne of Atlantis, becoming its king and protector of the seas.", powers: "Superhuman strength (even greater underwater), durability, telepathic command over all sea life. His Trident of Neptune grants elemental water control.", facts: ["Aquaman can withstand the pressure of the deepest ocean trenches", "He once commanded a massive army of sea creatures to repel an invasion", "He has fought Superman to a standstill underwater", "He is one of the Justice League's most powerful members — often underestimated"] },
+  { id: 26, name: "Green Lantern", alias: "Hal Jordan", universe: "dc", emoji: "💚", origin: "Test pilot Hal Jordan was chosen by a dying alien to inherit his power ring — the weapon of the Green Lantern Corps, an intergalactic peacekeeping force. Hal became the greatest Green Lantern in the entire Corps.", powers: "Green Lantern Power Ring creates anything the wielder can imagine using willpower. Flight, force fields, energy projection, and more — limited only by imagination.", facts: ["His ring works by willpower alone — Hal has more than almost anyone", "He once rebuilt the entire universe using the power of white light", "He became the villain Parallax after being corrupted by a fear entity", "There are over 7,200 Green Lanterns, one for every sector of the universe"] },
+  { id: 27, name: "Green Arrow", alias: "Oliver Queen", universe: "dc", emoji: "🏹", origin: "Billionaire Oliver Queen was stranded on a deserted island after his yacht sank. Forced to survive, he honed his archery skills over five years and returned as the Green Arrow, fighting crime and corruption.", powers: "No superhuman powers. The world's greatest archer. Uses trick arrows: explosive, grappling, EMP, net, and sonic. Also a skilled swordsman.", facts: ["He can shoot 29 arrows per minute — one every two seconds", "He was a billionaire, went broke fighting corruption, and rebuilt his fortune three times", "He trained under martial arts masters including Ra's al Ghul's League of Assassins", "He and Black Canary are one of DC's greatest love stories"] },
+  { id: 28, name: "Cyborg", alias: "Victor Stone", universe: "dc", emoji: "🤖", origin: "Victor Stone was a star athlete whose body was badly damaged in an explosion at his father's lab. His father fused him with experimental technology to save his life, replacing most of his body with cybernetics.", powers: "Cybernetic body with computer-level processing, internet integration, military-grade weapons (sonic cannon, missiles), flight, and the ability to interface with any technology in the world.", facts: ["He can connect to and control any networked device on Earth", "His tech originates from Apokolips — Darkseid's world", "He was a founding member of both the Teen Titans and the Justice League", "Over 70% of his body is now machine"] },
+  { id: 29, name: "Nightwing", alias: "Dick Grayson", universe: "dc", emoji: "🌃", origin: "The original Robin, Dick Grayson was a circus acrobat whose parents were murdered. Taken in by Bruce Wayne and trained as Batman's sidekick, he eventually created his own hero identity: Nightwing.", powers: "No superhuman powers. World-class acrobat, gymnast, and martial artist trained by Batman. Uses dual Escrima sticks. Considered by many to be the world's greatest natural athlete.", facts: ["He is considered DC's most beloved character in reader polls", "Batman has said Dick is better than him at being Batman", "He has led the Teen Titans, the Justice League, and the Bat-Family", "His circus roots mean he can memorise complex patterns after seeing them once"] },
+  { id: 30, name: "Zatanna", alias: "Zatanna Zatara", universe: "dc", emoji: "🪄", origin: "Born to master magician Giovanni Zatara, Zatanna has magical abilities in her blood. She trained under her father and became one of Earth's most powerful sorcerers, casting spells by speaking them backwards.", powers: "Reality-altering magic — she can do virtually anything by saying it backwards. Considered among the top five magic users on Earth.", facts: ["She speaks backwards instinctively — sometimes does it in casual conversation", "Her father Giovanni is also a powerful magician", "She can rewrite people's minds — a power she uses very carefully", "She is a stage magician as well as a superhero"] },
+  { id: 31, name: "Supergirl", alias: "Kara Zor-El", universe: "dc", emoji: "💫", origin: "Kara Zor-El is Superman's older cousin, also born on Krypton. She was sent to protect the infant Kal-El but her pod was knocked off course, arriving on Earth much later to find her baby cousin all grown up.", powers: "Identical to Superman: flight, super strength, invulnerability, heat vision, freeze breath, x-ray vision, super speed, and super hearing — all from Earth's yellow sun.", facts: ["She may technically have stronger base power than Superman", "She has died and been resurrected multiple times in DC history", "She once served in the Legion of Super-Heroes in the 30th century", "She is a founding member of the Justice League in several stories"] },
+  { id: 32, name: "Martian Manhunter", alias: "J'onn J'onzz", universe: "dc", emoji: "🟢", origin: "The last survivor of Mars, J'onn J'onzz was accidentally transported to Earth by a scientist's teleporter. With his entire civilisation extinct, he chose to become a protector of his adopted home.", powers: "Flight, superhuman strength comparable to Superman, telepathy, shapeshifting into any form, phasing through objects, and Martian vision energy blasts.", facts: ["He is DC's most senior Justice League member", "His only weakness is fire — it triggers deep ancestral fear", "He once absorbed the minds of every person on Earth to save them", "He enjoys Oreo cookies — a beloved running joke in DC comics"] },
+  { id: 33, name: "Black Canary", alias: "Dinah Lance", universe: "dc", emoji: "🎵", origin: "Dinah Lance is a second-generation hero — her mother was the original Black Canary. She mastered multiple martial arts and inherited her mother's Canary Cry metahuman sonic ability.", powers: "The Canary Cry — a supersonic scream capable of shattering steel and stunning enemies. Also a world-class martial artist trained by Batman and Lady Shiva.", facts: ["She is consistently rated in DC's top three hand-to-hand fighters", "Her partner is Green Arrow — one of comics' greatest couples", "The Canary Cry is so powerful it can affect Superman", "She founded the Birds of Prey — an all-female crimefighting team"] },
+  { id: 34, name: "Shazam", alias: "Billy Batson", universe: "dc", emoji: "⚡", origin: "Orphan Billy Batson was chosen by the ancient wizard Shazam to be his champion. By shouting the wizard's name, Billy transforms from a young boy into an adult superhero with the combined powers of six legendary figures.", powers: "The power of Solomon's Wisdom, Hercules' Strength, Atlas' Stamina, Zeus' Power (lightning control), Achilles' Courage (invulnerability), and Mercury's Speed. He can match Superman punch-for-punch.", facts: ["He was originally called Captain Marvel before the name changed", "Billy is still a child inside — he loves video games and junk food", "His magical nature makes him effective against Superman", "His villain Black Adam has the same powers, obtained through darker means"] },
+  { id: 35, name: "Hawkman", alias: "Carter Hall", universe: "dc", emoji: "🦅", origin: "Carter Hall is the reincarnation of an ancient Egyptian prince, cursed to be reborn throughout history. Each life he regains his memories and his special nth metal equipment, continuing his eternal fight against evil.", powers: "Nth metal harness grants flight, enhanced strength, and accelerated healing. Also slows ageing. Carries a massive spiked mace as his signature weapon.", facts: ["He is one of DC's oldest heroes — first appeared in 1940", "His memories span thousands of years and hundreds of lifetimes", "Nth metal is a rare alien metal that defies gravity and has magical properties", "He helped establish the Justice Society of America, DC's first superhero team"] },
+  { id: 36, name: "Atom", alias: "Ray Palmer", universe: "dc", emoji: "⚛️", origin: "Physicist Ray Palmer discovered a fragment of white dwarf star material that could shrink matter. Using it to create a size-control device, he became The Atom — able to shrink to subatomic size while retaining full human mass.", powers: "Size reduction to subatomic level, retaining full strength at any size. Can travel through phone lines as energy. Expert physicist.", facts: ["He can shrink small enough to enter a person's bloodstream", "He once spent years living at tiny size in a rain forest", "He is a founding member of the Justice League of America", "A second hero named Ryan Choi later took over the Atom mantle"] },
+  { id: 37, name: "Plastic Man", alias: "Patrick O'Brian", universe: "dc", emoji: "🤸", origin: "Former thief Eel O'Brian was doused in an experimental acid during a robbery and left for dead. The chemical transformed him, giving him the ability to stretch and shape his body into any form.", powers: "Unlimited elasticity — can stretch to miles in length, reshape into any object or creature, and is virtually indestructible. His brain can even reform from a puddle.", facts: ["Batman considers him the most dangerous shapeshifter on Earth", "He is nearly immortal — his cells do not age normally", "He has convincingly posed as furniture, vehicles, and even other people", "He once stretched himself around the entire planet Earth"] },
+  { id: 38, name: "Booster Gold", alias: "Michael Jon Carter", universe: "dc", emoji: "🥇", origin: "A disgraced 25th-century athlete, Michael Carter stole a power suit and a flight ring from a museum and travelled back in time to become a superhero for fame and money — though he secretly becomes one of the most important heroes in DC history.", powers: "Powered exosuit grants flight, superhuman strength, force field generation, and energy blasts. His robot sidekick Skeets provides historical information about events.", facts: ["He is one of DC's most important time-travel heroes", "He works with Blue Beetle as the world's greatest hero you have never heard of", "In secret, he has saved the DC timeline dozens of times while pretending to be a buffoon", "He was hand-picked by Rip Hunter to be the universe's time-travel guardian"] },
+];
+
+function getISOWeek(date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+function getNextMonday() {
+  const now = new Date();
+  const day = now.getDay();
+  const daysUntilMonday = day === 0 ? 1 : 8 - day;
+  const next = new Date(now);
+  next.setDate(now.getDate() + daysUntilMonday);
+  return next.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+const now = new Date();
+const week = getISOWeek(now);
+const seed = now.getFullYear() * 100 + week;
+const hotwHero = heroes[seed % heroes.length];
+
+function renderHoTW() {
+  const c = document.getElementById('hotw-container');
+  c.innerHTML = `
+    <div class="hotw ${hotwHero.universe}">
+      <div class="hotw-week">Week ${week}</div>
+      <div class="hotw-label">★ Hero of the Week ★</div>
+      <div class="hotw-inner">
+        <div class="hotw-emoji">${hotwHero.emoji}</div>
+        <div class="hotw-info">
+          <span class="hotw-badge ${hotwHero.universe}">${hotwHero.universe.toUpperCase()}</span>
+          <div class="hotw-name">${hotwHero.name}</div>
+          <div class="hotw-alias">${hotwHero.alias}</div>
+          <div class="hotw-teaser">${hotwHero.origin.slice(0, 120)}...</div>
+          <button class="hotw-btn" onclick="openModal(${hotwHero.id})">View Full Profile</button>
+          <div class="next-change">Changes automatically on Monday · Next: ${getNextMonday()}</div>
+        </div>
+      </div>
+    </div>`;
+}
+
+let currentFilter = 'all';
+let favorites = [];
+let selectedHero = null;
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.className = 'filter-btn');
+  btn.className = 'filter-btn active-' + f;
+  renderGrid();
+}
+
+function renderGrid() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const grid = document.getElementById('grid');
+  const filtered = heroes.filter(h => {
+    const matchF = currentFilter === 'all' || h.universe === currentFilter;
+    const matchS = h.name.toLowerCase().includes(search) || h.alias.toLowerCase().includes(search);
+    return matchF && matchS;
+  });
+  if (!filtered.length) { grid.innerHTML = '<div class="empty">No heroes found. Try a different search!</div>'; return; }
+  grid.innerHTML = filtered.map(h => `
+    <div class="hero-card ${h.universe} ${favorites.includes(h.id) ? 'selected' : ''} ${h.id === hotwHero.id ? 'hotw-card' : ''}" onclick="openModal(${h.id})">
+      ${h.id === hotwHero.id ? '<span class="hotw-crown">👑</span>' : ''}
+      <span class="hero-emoji">${h.emoji}</span>
+      <div class="hero-name">${h.name}</div>
+      <div class="hero-universe">${h.universe.toUpperCase()}</div>
+    </div>`).join('');
+}
+
+function openModal(id) {
+  const h = heroes.find(x => x.id === id);
+  selectedHero = h;
+  document.getElementById('m-emoji').textContent = h.emoji;
+  document.getElementById('m-name').textContent = h.name;
+  document.getElementById('m-alias').textContent = h.alias;
+  const badge = document.getElementById('m-badge');
+  badge.textContent = h.universe.toUpperCase();
+  badge.className = 'modal-badge ' + h.universe;
+  document.getElementById('m-origin').textContent = h.origin;
+  document.getElementById('m-powers').textContent = h.powers;
+  document.getElementById('m-facts').innerHTML = h.facts.map(f => `<li>${f}</li>`).join('');
+  document.getElementById('m-hotw').style.display = h.id === hotwHero.id ? 'block' : 'none';
+  updateFavBtn();
+  document.getElementById('modal').classList.add('open');
+}
+
+function updateFavBtn() {
+  const btn = document.getElementById('fav-btn');
+  if (favorites.includes(selectedHero.id)) {
+    btn.textContent = '★ Remove from favourites';
+    btn.className = 'fav-btn already';
+  } else {
+    btn.textContent = '☆ Add to favourites';
+    btn.className = 'fav-btn';
+  }
+}
+
+function toggleFav() {
+  if (!selectedHero) return;
+  favorites = favorites.includes(selectedHero.id)
+    ? favorites.filter(x => x !== selectedHero.id)
+    : [...favorites, selectedHero.id];
+  updateFavBtn();
+  renderGrid();
+  renderFavs();
+}
+
+function renderFavs() {
+  const section = document.getElementById('fav-section');
+  const grid = document.getElementById('fav-grid');
+  if (!favorites.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  grid.innerHTML = favorites.map(id => {
+    const h = heroes.find(x => x.id === id);
+    return `<div class="fav-pill" onclick="openModal(${h.id})">${h.emoji} ${h.name} <span class="remove" onclick="event.stopPropagation();removeFav(${h.id})">✕</span></div>`;
+  }).join('');
+}
+
+function removeFav(id) {
+  favorites = favorites.filter(x => x !== id);
+  renderGrid();
+  renderFavs();
+}
+
+function closeModal(e) { if (e.target.id === 'modal') closeModalBtn(); }
+function closeModalBtn() { document.getElementById('modal').classList.remove('open'); }
+
+renderHoTW();
+renderGrid();
+</script>
+</body>
+</html>
