@@ -1,0 +1,678 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--marvel:#E23636;--dc:#0476D9;--gold:#FFD700;--bg:#0a0a0f;--surface:#12121a;--card:#1a1a28;--border:rgba(255,255,255,0.08);--text:#f0f0f0;--muted:#888;--green:#22c55e;--purple:#a855f7;--god:#ff9500;}
+body{background:var(--bg);color:var(--text);font-family:'Barlow',sans-serif;min-height:100vh;}
+.app{max-width:960px;margin:0 auto;padding:1rem;}
+.nav{display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.2rem;}
+.nav-btn{font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:0.9rem;padding:0.4rem 0.9rem;border-radius:6px;border:2px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.nav-btn:hover,.nav-btn.active{border-color:var(--gold);color:var(--gold);}
+.header{text-align:center;margin-bottom:1rem;}
+.header h1{font-family:'Bebas Neue',cursive;font-size:clamp(2rem,7vw,4rem);letter-spacing:4px;background:linear-gradient(135deg,#E23636,#FFD700,#0476D9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.header .creator{font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:0.85rem;background:linear-gradient(90deg,var(--marvel),var(--gold),var(--dc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.xp-bar{display:flex;align-items:center;justify-content:center;gap:0.75rem;margin-top:0.6rem;flex-wrap:wrap;}
+.xp-badge{background:var(--surface);border:1.5px solid var(--gold);border-radius:20px;padding:0.3rem 1rem;font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:1rem;color:var(--gold);}
+.cards-badge{background:var(--surface);border:1.5px solid var(--purple);border-radius:20px;padding:0.3rem 1rem;font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:1rem;color:var(--purple);}
+.section{display:none;}.section.active{display:block;}
+.back-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+.back-btn{font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:0.85rem;padding:0.35rem 0.9rem;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.back-btn:hover{border-color:var(--marvel);color:var(--marvel);}
+.section-title-main{font-family:'Bebas Neue',cursive;font-size:1.4rem;letter-spacing:3px;color:var(--gold);margin:0;}
+.filter-bar{display:flex;gap:0.4rem;justify-content:center;flex-wrap:wrap;margin-bottom:1rem;}
+.filter-btn{font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:0.85rem;padding:0.3rem 0.8rem;border-radius:4px;border:2px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;}
+.filter-btn.active-all{border-color:var(--gold);color:var(--gold);}
+.filter-btn.active-marvel{border-color:var(--marvel);color:var(--marvel);}
+.filter-btn.active-dc{border-color:var(--dc);color:var(--dc);}
+.shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:0.75rem;}
+.shop-card{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:0.8rem 0.5rem;text-align:center;position:relative;overflow:hidden;}
+.shop-card.marvel{--accent:var(--marvel);}.shop-card.dc{--accent:var(--dc);}.shop-card.god{--accent:var(--god);}
+.shop-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);}
+.shop-card.owned{border-color:var(--green)!important;opacity:0.75;}
+.shop-emoji{font-size:2rem;display:block;margin-bottom:0.3rem;}
+.shop-name{font-family:'Bebas Neue',cursive;font-size:0.88rem;letter-spacing:1px;line-height:1.2;}
+.shop-cost{font-size:0.72rem;color:var(--gold);margin:0.25rem 0 0.4rem;font-weight:600;}
+.shop-stars{font-size:0.78rem;color:#aaa;margin-bottom:0.3rem;}
+.buy-btn{font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:0.78rem;padding:0.22rem 0.65rem;border-radius:4px;border:none;background:var(--gold);color:#111;cursor:pointer;}
+.buy-btn:disabled{background:var(--surface);color:var(--muted);border:1px solid var(--border);cursor:not-allowed;}
+.owned-tag{font-family:'Bebas Neue',cursive;font-size:0.72rem;color:var(--green);letter-spacing:1px;}
+.rare-badge{position:absolute;top:6px;right:6px;color:#fff;font-size:0.58rem;font-family:'Bebas Neue',cursive;letter-spacing:1px;padding:0.1rem 0.35rem;border-radius:3px;}
+.coll-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem;}
+.coll-card{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:0.9rem 0.5rem;text-align:center;position:relative;overflow:hidden;}
+.coll-card.marvel{--accent:var(--marvel);}.coll-card.dc{--accent:var(--dc);}.coll-card.god{--accent:var(--god);}
+.coll-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);}
+.coll-rating{font-size:0.72rem;color:var(--gold);margin-top:0.2rem;}
+.sell-btn{font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:0.75rem;padding:0.22rem 0.65rem;border-radius:4px;border:1px solid var(--marvel);background:rgba(226,54,54,0.15);color:var(--marvel);cursor:pointer;margin-top:0.4rem;}
+.empty-coll{text-align:center;color:var(--muted);padding:2rem;grid-column:1/-1;}
+.vote-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:0.75rem;}
+.vote-card{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:0.8rem 0.5rem;text-align:center;cursor:pointer;transition:transform 0.18s,border-color 0.18s;position:relative;overflow:hidden;}
+.vote-card.marvel{--accent:var(--marvel);}.vote-card.dc{--accent:var(--dc);}
+.vote-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);}
+.vote-card:hover{transform:translateY(-3px);}
+.vote-card.voted{border-color:var(--gold)!important;}
+.vote-count{font-size:0.72rem;color:var(--gold);font-weight:600;margin-top:0.3rem;}
+.vote-xp-note{text-align:center;color:var(--muted);font-size:0.85rem;margin-bottom:1rem;}
+.battle-area{background:var(--surface);border-radius:12px;padding:1.2rem;margin-bottom:1rem;border:1.5px solid var(--border);}
+.battle-row{display:flex;gap:0.75rem;align-items:stretch;flex-wrap:wrap;}
+.battle-slot{flex:1;min-width:120px;background:var(--card);border-radius:10px;border:2px dashed var(--border);padding:1rem 0.5rem;text-align:center;min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.battle-slot.filled{border-style:solid;border-color:var(--green);}
+.battle-slot.enemy{border-color:var(--marvel);}
+.battle-vs{font-family:'Bebas Neue',cursive;font-size:2rem;color:var(--gold);align-self:center;flex:0;}
+.battle-slot-emoji{font-size:2.5rem;}
+.battle-slot-name{font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:0.9rem;margin-top:0.3rem;}
+.battle-slot-power{font-size:0.75rem;color:var(--gold);margin-top:0.2rem;}
+.battle-btn{font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:1.1rem;padding:0.6rem 2rem;border-radius:8px;border:none;background:var(--gold);color:#111;cursor:pointer;display:block;margin:0.75rem auto 0;}
+.battle-btn:disabled{background:var(--surface);color:var(--muted);border:1px solid var(--border);cursor:not-allowed;}
+.battle-result{text-align:center;padding:1rem;border-radius:10px;margin-top:0.75rem;font-family:'Bebas Neue',cursive;font-size:1.3rem;letter-spacing:2px;}
+.battle-result.win{background:rgba(34,197,94,0.15);border:1.5px solid var(--green);color:var(--green);}
+.battle-result.lose{background:rgba(226,54,54,0.15);border:1.5px solid var(--marvel);color:var(--marvel);}
+.battle-result.draw{background:rgba(255,215,0,0.1);border:1.5px solid var(--gold);color:var(--gold);}
+.pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:0.5rem;margin-top:0.5rem;}
+.pick-card{background:var(--card);border:1.5px solid var(--border);border-radius:8px;padding:0.6rem 0.4rem;text-align:center;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;}
+.pick-card.marvel{--accent:var(--marvel);}.pick-card.dc{--accent:var(--dc);}.pick-card.god{--accent:var(--god);}
+.pick-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);}
+.pick-card:hover{transform:translateY(-2px);}
+.pick-card.chosen{border-color:var(--green)!important;}
+.pick-emoji{font-size:1.6rem;display:block;}
+.pick-name{font-family:'Bebas Neue',cursive;font-size:0.78rem;letter-spacing:1px;line-height:1.2;}
+.pick-pow{font-size:0.7rem;color:var(--gold);}
+.forfeit-overlay{background:rgba(0,0,0,0.92);border-radius:12px;border:2px solid var(--marvel);padding:1.5rem;margin-top:1rem;}
+.forfeit-title{font-family:'Bebas Neue',cursive;font-size:1.4rem;letter-spacing:3px;color:var(--marvel);text-align:center;margin-bottom:0.4rem;}
+.forfeit-sub{font-size:0.85rem;color:var(--muted);text-align:center;margin-bottom:1rem;}
+.forfeit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem;}
+.forfeit-card{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:0.8rem 0.4rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.forfeit-card.marvel{--accent:var(--marvel);}.forfeit-card.dc{--accent:var(--dc);}.forfeit-card.god{--accent:var(--god);}
+.forfeit-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent);}
+.forfeit-card:hover{border-color:var(--marvel);transform:translateY(-3px);}
+.mp-box{background:var(--surface);border-radius:12px;padding:1.5rem;border:1.5px solid var(--border);max-width:480px;margin:0 auto;}
+.mp-box h2{font-family:'Bebas Neue',cursive;font-size:1.5rem;letter-spacing:3px;color:var(--gold);margin-bottom:1rem;text-align:center;}
+.mp-input{width:100%;background:var(--card);border:1.5px solid var(--border);border-radius:6px;padding:0.6rem 1rem;color:var(--text);font-family:'Barlow',sans-serif;font-size:1rem;outline:none;transition:border-color 0.2s;margin-bottom:0.75rem;}
+.mp-input:focus{border-color:var(--gold);}
+.mp-input::placeholder{color:var(--muted);}
+.mp-btn{width:100%;font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:1.1rem;padding:0.65rem;border-radius:8px;border:none;background:var(--gold);color:#111;cursor:pointer;margin-bottom:0.5rem;}
+.mp-status{text-align:center;font-size:0.9rem;color:var(--muted);margin-top:0.5rem;min-height:1.5rem;}
+.mp-waiting{color:var(--gold);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.mp-note{font-size:0.78rem;color:var(--muted);text-align:center;margin-top:0.75rem;line-height:1.5;}
+.mp-result-box{background:var(--card);border-radius:10px;padding:1rem;border:1.5px solid var(--border);font-family:'Bebas Neue',cursive;letter-spacing:1px;font-size:1.1rem;text-align:center;margin-top:0.75rem;}
+.admin-box{background:var(--surface);border-radius:12px;padding:1.5rem;border:1.5px solid var(--border);max-width:520px;margin:0 auto;}
+.admin-box h2{font-family:'Bebas Neue',cursive;font-size:1.5rem;letter-spacing:3px;color:var(--gold);margin-bottom:1rem;text-align:center;}
+.code-list{margin-bottom:1rem;}
+.code-item{display:flex;gap:0.5rem;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;}
+.code-item input{flex:1;min-width:90px;background:var(--card);border:1.5px solid var(--border);border-radius:6px;padding:0.4rem 0.65rem;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.88rem;outline:none;}
+.code-item input:focus{border-color:var(--gold);}
+.code-item select{background:var(--card);border:1.5px solid var(--border);border-radius:6px;padding:0.4rem;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.82rem;outline:none;cursor:pointer;}
+.code-item .del-btn{background:rgba(226,54,54,0.2);border:1px solid var(--marvel);color:var(--marvel);border-radius:4px;padding:0.28rem 0.55rem;font-size:0.8rem;cursor:pointer;}
+.add-code-btn{font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:0.95rem;padding:0.45rem 1rem;border-radius:6px;border:2px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;}
+.save-codes-btn{width:100%;font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:1.1rem;padding:0.6rem;border-radius:8px;border:none;background:var(--gold);color:#111;cursor:pointer;margin-top:0.75rem;}
+.redeem-box{background:var(--surface);border-radius:12px;padding:1.5rem;border:1.5px solid var(--border);max-width:400px;margin:0 auto 1rem;}
+.redeem-box h3{font-family:'Bebas Neue',cursive;font-size:1.2rem;letter-spacing:2px;color:var(--purple);margin-bottom:0.75rem;text-align:center;}
+.countdown-wrap{display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-top:0.4rem;}
+.countdown-ring{width:18px;height:18px;border-radius:50%;border:2px solid var(--marvel);border-top-color:transparent;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.countdown-text{font-size:0.75rem;color:var(--muted);}
+.exit-row{display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.5rem;flex-wrap:wrap;}
+.exit-btn{font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:0.82rem;padding:0.32rem 0.8rem;border-radius:6px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.exit-btn:hover{border-color:var(--marvel);color:var(--marvel);}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border-radius:10px;padding:0.75rem 1.5rem;font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:1rem;z-index:998;transition:transform 0.3s ease,opacity 0.3s ease;opacity:0;pointer-events:none;border:2px solid var(--border);white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.good{border-color:var(--green);color:var(--green);}
+.toast.bad{border-color:var(--marvel);color:var(--marvel);}
+.toast.info{border-color:var(--gold);color:var(--gold);}
+.toast.god{border-color:var(--god);color:var(--god);}
+.god-glow{animation:godpulse 2s infinite;}
+@keyframes godpulse{0%,100%{text-shadow:0 0 10px var(--god),0 0 20px var(--god);}50%{text-shadow:0 0 20px var(--god),0 0 40px var(--god),0 0 60px gold;}}
+
+/* ===== FACT PANEL ===== */
+.fact-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:999;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.fact-backdrop.open{opacity:1;pointer-events:all;}
+.fact-panel{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;border-top:2px solid var(--border);z-index:1000;padding:1.5rem 1.5rem 2rem;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);max-width:600px;margin:0 auto;}
+.fact-panel.open{transform:translateY(0);}
+.fact-panel-handle{width:40px;height:4px;background:var(--border);border-radius:4px;margin:0 auto 1.2rem;}
+.fact-hero-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;}
+.fact-hero-emoji{font-size:3rem;line-height:1;}
+.fact-hero-name{font-family:'Bebas Neue',cursive;font-size:1.8rem;letter-spacing:3px;line-height:1;}
+.fact-hero-alias{font-size:0.85rem;color:var(--muted);margin-top:0.1rem;}
+.fact-hero-power{font-size:0.82rem;color:var(--gold);margin-top:0.2rem;font-weight:600;}
+.fact-card-area{position:relative;min-height:110px;overflow:hidden;margin-bottom:1rem;}
+.fact-card{background:var(--card);border-radius:12px;border:1.5px solid var(--border);padding:1.1rem 1.2rem;position:absolute;width:100%;transition:transform 0.35s ease,opacity 0.35s ease;}
+.fact-card.active{transform:translateX(0);opacity:1;}
+.fact-card.left{transform:translateX(-110%);opacity:0;}
+.fact-card.right{transform:translateX(110%);opacity:0;}
+.fact-number{font-family:'Bebas Neue',cursive;font-size:0.78rem;letter-spacing:2px;color:var(--muted);margin-bottom:0.4rem;}
+.fact-text{font-size:1rem;line-height:1.55;color:var(--text);}
+.fact-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:1rem;}
+.fact-nav-btn{font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:1rem;padding:0.5rem 1.2rem;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;transition:all 0.2s;}
+.fact-nav-btn:hover{border-color:var(--gold);color:var(--gold);}
+.fact-nav-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.fact-dots{display:flex;gap:0.4rem;align-items:center;}
+.fact-dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:background 0.2s,transform 0.2s;}
+.fact-dot.active{background:var(--gold);transform:scale(1.3);}
+.fact-close-btn{width:100%;font-family:'Bebas Neue',cursive;letter-spacing:2px;font-size:1.1rem;padding:0.65rem;border-radius:8px;border:none;background:var(--gold);color:#111;cursor:pointer;}
+</style>
+
+<div class="toast" id="toast"></div>
+<!-- FACT PANEL -->
+<div class="fact-backdrop" id="fact-backdrop" onclick="closeFactPanel()"></div>
+<div class="fact-panel" id="fact-panel">
+  <div class="fact-panel-handle"></div>
+  <div class="fact-hero-header">
+    <div class="fact-hero-emoji" id="fp-emoji"></div>
+    <div>
+      <div class="fact-hero-name" id="fp-name"></div>
+      <div class="fact-hero-alias" id="fp-alias"></div>
+      <div class="fact-hero-power" id="fp-power"></div>
+    </div>
+  </div>
+  <div class="fact-card-area" id="fp-card-area"></div>
+  <div class="fact-nav">
+    <button class="fact-nav-btn" id="fp-prev" onclick="factNav(-1)">◀ Prev</button>
+    <div class="fact-dots" id="fp-dots"></div>
+    <button class="fact-nav-btn" id="fp-next" onclick="factNav(1)">Next ▶</button>
+  </div>
+  <button class="fact-close-btn" onclick="closeFactPanel()">✕ Awesome, close!</button>
+</div>
+
+<div class="app">
+  <div class="header">
+    <h1>Hero Card Game</h1>
+    <p class="creator">🦸 A Damien Selva Creation</p>
+    <div class="xp-bar">
+      <span class="xp-badge">⚡ <span id="xp-display">500</span> XP</span>
+      <span class="cards-badge">🃏 <span id="cards-display">0</span> Cards</span>
+    </div>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" id="nav-shop" onclick="showSection('shop',this)">🛒 Shop</button>
+    <button class="nav-btn" id="nav-collection" onclick="showSection('collection',this)">🃏 My Cards</button>
+    <button class="nav-btn" id="nav-battle" onclick="showSection('battle',this)">⚔️ Battle</button>
+    <button class="nav-btn" id="nav-vote" onclick="showSection('vote',this)">⭐ Vote</button>
+    <button class="nav-btn" id="nav-multiplayer" onclick="showSection('multiplayer',this)">🌐 Multi</button>
+    <button class="nav-btn" id="nav-codes" onclick="showSection('codes',this)">🎁 Codes</button>
+    <button class="nav-btn" id="nav-admin" onclick="showSection('admin',this)">🔒 Admin</button>
+  </div>
+
+  <div class="section active" id="sec-shop">
+    <div class="back-bar"><div class="section-title-main">🛒 Hero Shop</div><button class="back-btn" onclick="goHome()">✕ Exit</button></div>
+    <div class="filter-bar">
+      <button class="filter-btn active-all" onclick="setShopFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setShopFilter('marvel',this)">Marvel</button>
+      <button class="filter-btn" onclick="setShopFilter('dc',this)">DC</button>
+    </div>
+    <div class="shop-grid" id="shop-grid"></div>
+  </div>
+
+  <div class="section" id="sec-collection">
+    <div class="back-bar"><div class="section-title-main">🃏 My Cards</div><button class="back-btn" onclick="goHome()">✕ Back to Shop</button></div>
+    <p style="font-size:0.82rem;color:var(--muted);text-align:center;margin-bottom:0.75rem;">Tap a card to read its facts! Sell any card to get XP back.</p>
+    <div class="coll-grid" id="coll-grid"></div>
+  </div>
+
+  <div class="section" id="sec-battle">
+    <div class="back-bar"><div class="section-title-main">⚔️ Battle Arena</div><button class="back-btn" onclick="goHome()">✕ Back to Shop</button></div>
+    <div class="battle-area">
+      <div style="text-align:center;color:var(--muted);font-size:0.82rem;margin-bottom:0.5rem;">Pick your hero below then hit FIGHT! ⚠️ Lose = give up a card!</div>
+      <div class="battle-row">
+        <div class="battle-slot" id="player-slot"><div style="color:var(--muted);font-size:0.85rem;">Pick a card below</div></div>
+        <div class="battle-vs">VS</div>
+        <div class="battle-slot enemy" id="enemy-slot"><div style="color:var(--muted);font-size:0.85rem;">Waiting...</div></div>
+      </div>
+      <button class="battle-btn" id="fight-btn" onclick="doFight()" disabled>⚔️ FIGHT!</button>
+      <div id="battle-result-wrap"></div>
+    </div>
+    <div style="font-size:0.8rem;color:var(--muted);margin-bottom:0.5rem;">Choose your fighter:</div>
+    <div class="pick-grid" id="pick-grid"></div>
+  </div>
+
+  <div class="section" id="sec-vote">
+    <div class="back-bar"><div class="section-title-main">⭐ Vote</div><button class="back-btn" onclick="goHome()">✕ Back to Shop</button></div>
+    <div class="vote-xp-note">Vote once per hero to earn +50 XP! Votes boost their battle power.</div>
+    <div class="filter-bar" style="margin-top:0.75rem;">
+      <button class="filter-btn active-all" onclick="setVoteFilter('all',this)">All</button>
+      <button class="filter-btn" onclick="setVoteFilter('marvel',this)">Marvel</button>
+      <button class="filter-btn" onclick="setVoteFilter('dc',this)">DC</button>
+    </div>
+    <div class="vote-grid" id="vote-grid"></div>
+  </div>
+
+  <div class="section" id="sec-multiplayer">
+    <div class="back-bar"><div class="section-title-main">🌐 Multiplayer</div><button class="back-btn" onclick="goHome()">✕ Back to Shop</button></div>
+    <div class="mp-box">
+      <h2>Play With Friends</h2>
+      <p style="font-size:0.85rem;color:var(--muted);text-align:center;margin-bottom:1rem;">Type the same code as a friend to get matched!</p>
+      <input class="mp-input" id="mp-code-input" placeholder="Type a match code (e.g. herotime123)" />
+      <button class="mp-btn" onclick="joinMatch()">Join Match</button>
+      <div class="mp-status" id="mp-status"></div>
+      <div id="mp-result-wrap"></div>
+      <div class="mp-note">⚠️ Real multiplayer needs the site hosted online. This preview simulates a match!</div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-codes">
+    <div class="back-bar"><div class="section-title-main">🎁 Redeem a Code</div><button class="back-btn" onclick="goHome()">✕ Back to Shop</button></div>
+    <div class="redeem-box">
+      <h3>Enter Your Code</h3>
+      <input class="mp-input" id="redeem-input" placeholder="Type your secret code here..." />
+      <button class="mp-btn" onclick="redeemCode()">Redeem!</button>
+      <div id="redeem-result-area"></div>
+    </div>
+  </div>
+
+  <div class="section" id="sec-admin">
+    <div class="back-bar"><div class="section-title-main">🔒 Admin</div><button class="back-btn" onclick="goHome()">✕ Back to Shop</button></div>
+    <div class="admin-box" id="admin-locked">
+      <h2>🔒 Admin Login</h2>
+      <p style="font-size:0.85rem;color:var(--muted);text-align:center;margin-bottom:0.75rem;">Only Damien can access this!</p>
+      <input class="mp-input" id="admin-pass-input" type="password" placeholder="Admin password..." />
+      <button class="mp-btn" onclick="adminLogin()">Login</button>
+      <div id="admin-login-result" style="text-align:center;font-size:0.9rem;margin-top:0.5rem;min-height:1.2rem;"></div>
+    </div>
+    <div class="admin-box" id="admin-panel" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+        <h2 style="margin:0;">⚙️ Admin Panel</h2>
+        <button class="back-btn" onclick="exitAdmin()">✕ Log Out</button>
+      </div>
+      <p style="font-size:0.85rem;color:var(--muted);text-align:center;margin-bottom:1rem;">Create codes for your friends!</p>
+      <div class="code-list" id="code-list"></div>
+      <button class="add-code-btn" onclick="addCodeRow()">+ Add New Code</button>
+      <button class="save-codes-btn" onclick="saveCodes()">💾 Save All Codes</button>
+      <div id="save-result" style="text-align:center;font-size:0.9rem;margin-top:0.5rem;min-height:1.2rem;"></div>
+      <hr style="border-color:var(--border);margin:1rem 0;">
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:0.5rem;text-align:center;">Change admin password:</p>
+      <input class="mp-input" id="new-pass-input" type="password" placeholder="New password..." />
+      <button class="mp-btn" onclick="changePass()">Change Password</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const HERO_FACTS = {
+  1:["Spider-Man was created by Stan Lee and Steve Ditko in 1962.","His spider-sense tingles before danger hits — like a superpower alarm!","Peter Parker got his powers from a radioactive spider bite on a school trip.","He invented his own web-shooters using chemistry — he's a total genius."],
+  2:["Tony Stark built the first Iron Man suit in a cave using scraps.","The suit can fly at over 1500 mph — faster than most fighter jets!","Iron Man has over 50 different armour suits, including one made of pure gold.","Tony Stark is a genius, billionaire, playboy, and philanthropist — his words!"],
+  3:["Thor's hammer Mjolnir can only be lifted by someone worthy.","Thor is over 1,500 years old — he's been around since the Vikings!","He once drank an entire ocean (almost) in a drinking contest.","Thor is the Norse god of thunder — real Vikings actually worshipped him."],
+  4:["Captain America's shield is made of vibranium — the rarest metal on Earth.","Steve Rogers was rejected by the army 5 times before getting the super soldier serum.","He was frozen in ice for 70 years and woke up in modern times.","Cap can throw his shield and it always bounces back to him like a boomerang."],
+  5:["Black Widow speaks over 10 languages fluently.","Natasha Romanoff was trained in the Red Room — a secret Soviet spy school.","She has a photographic memory and can recall everything she's ever seen.","Black Widow has no superpowers — she's just incredibly skilled and trained."],
+  6:["The Hulk gets stronger the angrier he gets — there's technically no limit!","Bruce Banner accidentally got hit by gamma radiation during a bomb test.","Hulk once punched so hard he split a planet in the comics.","The Hulk can hold his breath for hours and survive in space."],
+  7:["Black Panther is the king of Wakanda, the most advanced nation on Earth.","His suit is made of vibranium and can absorb and redirect energy.","T'Challa is one of the smartest characters in the Marvel universe.","The Black Panther title is passed down — T'Challa had to earn it by fighting."],
+  8:["Doctor Strange was a brilliant surgeon before becoming Sorcerer Supreme.","He can open portals to anywhere in the universe using a Sancrosanct Sling Ring.","Strange once watched 14 million possible futures to find the one where they win.","His Cloak of Levitation chose him — it's basically alive and has its own personality!"],
+  9:["Wolverine's bones are coated in adamantium — the strongest metal in Marvel.","He has a healing factor so powerful he can regrow entire limbs.","Wolverine is over 190 years old — he fought in the American Civil War!","His real name is James Howlett but he's gone by Logan for most of his life."],
+  10:["Captain Marvel can fly at over six times the speed of light.","She gets her powers from the explosion of a light-speed engine.","Carol Danvers is the most powerful Avenger according to Nick Fury.","She can absorb energy attacks and fire them back even stronger."],
+  11:["Scarlet Witch can rewrite reality itself — she once changed the whole Marvel universe.","Wanda Maximoff's powers come from the Mind Stone and chaos magic.","She created an entire fake world called the Hex to live in with Vision.","In the comics, she said three words — 'No more mutants' — and depowered millions."],
+  12:["Ant-Man can shrink down to the size of an ant but keeps his full human strength.","Scott Lang stole the Ant-Man suit to save his daughter — he's a good dad!","He can also grow giant — up to 65 feet tall as Giant-Man.","Ant-Man communicates with ants using a special helmet that sends signals."],
+  13:["Hawkeye never misses — he has near-perfect accuracy with a bow and arrow.","Clint Barton is actually deaf and uses hearing aids in the comics.","He has trick arrows with special tips — including explosives, grappling hooks, and more.","Hawkeye trained under a circus performer called the Swordsman when he was young."],
+  14:["Falcon's wings are made of a material called Wakandan Vibranium.","Sam Wilson can telepathically communicate with birds, especially his falcon Redwing.","He became the new Captain America after Steve Rogers passed on the shield.","The Falcon suit can reach speeds of 250 mph in flight."],
+  15:["War Machine's suit is a heavily armoured version of the Iron Man armour.","James Rhodes is a US Air Force officer and one of Tony Stark's best friends.","His suit has a rotating cannon on the shoulder called a M134 minigun.","War Machine once carried an entire nuclear warhead into space to save Earth."],
+  16:["Vision is made from the body of JARVIS, Tony's AI, and the Mind Stone.","He can phase through solid objects by changing his density.","Vision once lifted Thor's hammer Mjolnir, proving he is truly worthy.","He can fly, fire energy beams, and change his density from diamond-hard to ghost."],
+  17:["Deadpool knows he's in a comic book — he literally breaks the fourth wall.","His healing factor is even stronger than Wolverine's — he once regrew his whole head.","Wade Wilson got his powers from a Weapon X experiment to cure his cancer.","Deadpool once killed the entire Marvel universe in a comic called Deadpool Kills the Marvel Universe."],
+  18:["Moon Knight has multiple personalities — Marc Spector, Steven Grant, and Jake Lockley.","He's the avatar of Khonshu, the Egyptian god of the moon and vengeance.","Moon Knight gets stronger when moonlight shines on him.","Unlike most heroes, Moon Knight is actually scarier to villains at night."],
+  19:["Shang-Chi learned martial arts from his father — a legendary villain named Xu Wenwu.","The Ten Rings are thousands of years old and grant their user immense power.","Shang-Chi can communicate with and command mythical creatures.","He mastered the power of the Ten Rings in just days — normally it takes a lifetime."],
+  20:["Nick Fury founded and leads S.H.I.E.L.D. — the world's top spy agency.","He lost his left eye and wears a signature eye patch.","Fury is the one who assembled the Avengers by recruiting each member personally.","In the comics, Nick Fury has a special serum that slows his ageing massively."],
+  21:["Batman has no superpowers — just incredible intelligence and training.","Bruce Wayne watched his parents get murdered as a child, which drove him to fight crime.","Batman has a plan to defeat every single member of the Justice League, just in case.","The Batcave is hidden under Wayne Manor and is full of high-tech gadgets."],
+  22:["Superman gets his powers from Earth's yellow sun — he's basically solar-powered.","Clark Kent is from the planet Krypton, destroyed when he was a baby.","He can see through almost anything with X-ray vision — except lead.","Superman can move so fast he can travel back in time by flying around Earth really quickly."],
+  23:["Wonder Woman is a demigoddess — her father is Zeus, king of the gods.","Diana Prince trained as an Amazonian warrior on the hidden island of Themyscira.","Her lasso of truth forces anyone it touches to tell the whole truth.","Wonder Woman was the first female superhero in DC Comics, created in 1941."],
+  24:["The Flash is the fastest man alive — he can run faster than the speed of light.","Barry Allen got his powers when lightning struck a shelf of chemicals in his lab.","He can vibrate through solid objects by matching the frequency of molecules.","The Flash is connected to the Speed Force — an extra-dimensional energy field."],
+  25:["Aquaman is king of Atlantis, the underwater civilisation with billions of people.","Arthur Curry can communicate telepathically with all sea creatures.","He's one of the strongest heroes — his body withstands deep ocean pressure.","Aquaman's trident is one of the most powerful weapons in the DC universe."],
+  26:["Green Lantern's power ring is considered the most powerful weapon in the universe.","It can create anything its user imagines — as long as they have the willpower.","Hal Jordan was chosen by his ring because he is completely fearless.","There are 7,200 Green Lanterns across the universe — one for each space sector."],
+  27:["Green Arrow is basically DC's version of Hawkeye — a master archer with trick arrows.","Oliver Queen survived on a desert island for years and trained himself into a warrior.","He has over 60 types of special arrows including net arrows, EMP arrows, and more.","Green Arrow is also a billionaire who uses his fortune to fight crime in Star City."],
+  28:["Cyborg is half human, half machine — his body is 60% technology.","Victor Stone was rebuilt by his father using an alien device called a Mother Box.","Cyborg can interface with any computer or digital system in the world instantly.","He's one of the founding members of the Justice League in the New 52 comics."],
+  29:["Nightwing was the original Robin — Batman's first sidekick, Dick Grayson.","He grew up in a circus family of acrobats called the Flying Graysons.","Nightwing is considered by many to be a better fighter than Batman himself.","He leads the Titans and has trained dozens of young heroes over the years."],
+  30:["Zatanna casts spells by speaking backwards — she says words in reverse to activate magic.","She's one of the most powerful magic users in the DC universe.","Zatanna is a stage magician in her civilian life — her magic looks like a real show.","Her father Giovanni Zatara was also a powerful sorcerer who taught her everything."],
+  31:["Supergirl is Superman's cousin — she's actually older than him and remembers Krypton.","Kara Zor-El arrived on Earth later than Superman because her pod got knocked off course.","She's just as powerful as Superman and some argue even more so.","Supergirl once destroyed a Kryptonite-powered weapon by flying through it at full speed."],
+  32:["Martian Manhunter is one of the last survivors of Mars.","J'onn J'onzz can shapeshift into literally anything, including other people.","He has telepathy powerful enough to link the minds of every person on Earth at once.","His only weakness is fire — which is why he usually avoids it completely."],
+  33:["Black Canary's sonic scream — the Canary Cry — can shatter steel and stun enemies.","Dinah Lance is considered one of the best hand-to-hand fighters in the DC universe.","Her mother was also Black Canary — she inherited both the name and the mission.","She's been a member of the Justice League, Birds of Prey, and Team Arrow."],
+  34:["Shazam transforms from a 15-year-old boy named Billy Batson into an adult superhero.","The word SHAZAM stands for Solomon, Hercules, Atlas, Zeus, Achilles, and Mercury.","When he says SHAZAM, a magical lightning bolt strikes him and changes his form.","Shazam has the wisdom of Solomon — so he's incredibly smart even as a kid."],
+  35:["Hawkman's wings are real — made from a rare material called Nth Metal.","Carter Hall is the reincarnation of an ancient Egyptian prince named Khufu.","He and Hawkwoman have been reincarnated and found each other in every lifetime.","Nth Metal also makes his mace incredibly powerful — it defies gravity and hits super hard."],
+  36:["The Atom can shrink down to sub-atomic size — smaller than electrons!","Ray Palmer discovered a white dwarf star fragment and used it to shrink matter.","He can ride phone signals and travel through any electronic device.","The Atom uses his size-changing to perform surgery from inside a patient's body."],
+  37:["Plastic Man can stretch and reshape his body into anything he imagines.","Eel O'Brian was a criminal who fell into a vat of chemicals and gained his powers.","He's nearly impossible to destroy because his body just reforms after any attack.","Batman once said Plastic Man is one of the most dangerous beings on Earth if he goes bad."],
+  38:["Booster Gold is a time traveler from the 25th century who came back to become famous.","He stole a Legion flight ring and force field belt from a museum to become a hero.","Booster Gold and Blue Beetle are best friends and the ultimate comedy duo of DC.","Despite seeming like a glory-seeker, Booster has secretly saved history hundreds of times."],
+};
+
+const DAMIEN_CARD={id:99,name:"Damien",alias:"Damien Selva — The Creator",universe:"god",emoji:"👑",basePower:Number.MAX_SAFE_INTEGER,rarity:"god",damienCard:true};
+const DAMIEN_FACTS=["Damien created this entire card game from scratch — that's legendary! 👑","The Damien card has infinite power. No hero in any universe can beat it.","Damien's special code DEMOSLAY unlocks this card — only the chosen ones know it.","If Damien and Superman fought, Superman would politely hand over his cape and retire."];
+
+const heroes=[
+  {id:1,name:"Spider-Man",alias:"Peter Parker",universe:"marvel",emoji:"🕷️",basePower:88,rarity:"rare"},
+  {id:2,name:"Iron Man",alias:"Tony Stark",universe:"marvel",emoji:"🦾",basePower:85,rarity:"rare"},
+  {id:3,name:"Thor",alias:"Thor Odinson",universe:"marvel",emoji:"⚡",basePower:92,rarity:"rare"},
+  {id:4,name:"Captain America",alias:"Steve Rogers",universe:"marvel",emoji:"🛡️",basePower:80,rarity:"common"},
+  {id:5,name:"Black Widow",alias:"Natasha Romanoff",universe:"marvel",emoji:"🕸️",basePower:72,rarity:"common"},
+  {id:6,name:"Hulk",alias:"Bruce Banner",universe:"marvel",emoji:"💚",basePower:95,rarity:"rare"},
+  {id:7,name:"Black Panther",alias:"T'Challa",universe:"marvel",emoji:"🐾",basePower:82,rarity:"common"},
+  {id:8,name:"Doctor Strange",alias:"Stephen Strange",universe:"marvel",emoji:"🔮",basePower:90,rarity:"rare"},
+  {id:9,name:"Wolverine",alias:"Logan",universe:"marvel",emoji:"🦴",basePower:86,rarity:"common"},
+  {id:10,name:"Captain Marvel",alias:"Carol Danvers",universe:"marvel",emoji:"🌟",basePower:93,rarity:"rare"},
+  {id:11,name:"Scarlet Witch",alias:"Wanda Maximoff",universe:"marvel",emoji:"🔴",basePower:96,rarity:"legendary"},
+  {id:12,name:"Ant-Man",alias:"Scott Lang",universe:"marvel",emoji:"🐜",basePower:68,rarity:"common"},
+  {id:13,name:"Hawkeye",alias:"Clint Barton",universe:"marvel",emoji:"🏹",basePower:65,rarity:"common"},
+  {id:14,name:"Falcon",alias:"Sam Wilson",universe:"marvel",emoji:"🦅",basePower:70,rarity:"common"},
+  {id:15,name:"War Machine",alias:"James Rhodes",universe:"marvel",emoji:"🤖",basePower:78,rarity:"common"},
+  {id:16,name:"Vision",alias:"Vision",universe:"marvel",emoji:"💎",basePower:87,rarity:"rare"},
+  {id:17,name:"Deadpool",alias:"Wade Wilson",universe:"marvel",emoji:"💬",basePower:83,rarity:"common"},
+  {id:18,name:"Moon Knight",alias:"Marc Spector",universe:"marvel",emoji:"🌙",basePower:77,rarity:"common"},
+  {id:19,name:"Shang-Chi",alias:"Xu Shang-Chi",universe:"marvel",emoji:"🥋",basePower:79,rarity:"common"},
+  {id:20,name:"Nick Fury",alias:"Nicholas Fury",universe:"marvel",emoji:"🕶️",basePower:74,rarity:"common"},
+  {id:21,name:"Batman",alias:"Bruce Wayne",universe:"dc",emoji:"🦇",basePower:85,rarity:"rare"},
+  {id:22,name:"Superman",alias:"Clark Kent",universe:"dc",emoji:"🦸",basePower:97,rarity:"legendary"},
+  {id:23,name:"Wonder Woman",alias:"Diana Prince",universe:"dc",emoji:"⚔️",basePower:94,rarity:"rare"},
+  {id:24,name:"The Flash",alias:"Barry Allen",universe:"dc",emoji:"⚡",basePower:91,rarity:"rare"},
+  {id:25,name:"Aquaman",alias:"Arthur Curry",universe:"dc",emoji:"🔱",basePower:82,rarity:"common"},
+  {id:26,name:"Green Lantern",alias:"Hal Jordan",universe:"dc",emoji:"💚",basePower:89,rarity:"rare"},
+  {id:27,name:"Green Arrow",alias:"Oliver Queen",universe:"dc",emoji:"🏹",basePower:67,rarity:"common"},
+  {id:28,name:"Cyborg",alias:"Victor Stone",universe:"dc",emoji:"🤖",basePower:80,rarity:"common"},
+  {id:29,name:"Nightwing",alias:"Dick Grayson",universe:"dc",emoji:"🌃",basePower:75,rarity:"common"},
+  {id:30,name:"Zatanna",alias:"Zatanna Zatara",universe:"dc",emoji:"🪄",basePower:88,rarity:"rare"},
+  {id:31,name:"Supergirl",alias:"Kara Zor-El",universe:"dc",emoji:"💫",basePower:93,rarity:"rare"},
+  {id:32,name:"Martian Manhunter",alias:"J'onn J'onzz",universe:"dc",emoji:"🟢",basePower:92,rarity:"rare"},
+  {id:33,name:"Black Canary",alias:"Dinah Lance",universe:"dc",emoji:"🎵",basePower:74,rarity:"common"},
+  {id:34,name:"Shazam",alias:"Billy Batson",universe:"dc",emoji:"⚡",basePower:91,rarity:"rare"},
+  {id:35,name:"Hawkman",alias:"Carter Hall",universe:"dc",emoji:"🦅",basePower:71,rarity:"common"},
+  {id:36,name:"Atom",alias:"Ray Palmer",universe:"dc",emoji:"⚛️",basePower:69,rarity:"common"},
+  {id:37,name:"Plastic Man",alias:"Patrick O'Brian",universe:"dc",emoji:"🤸",basePower:73,rarity:"common"},
+  {id:38,name:"Booster Gold",alias:"Michael Carter",universe:"dc",emoji:"🥇",basePower:66,rarity:"common"},
+];
+
+const allCards=()=>[...heroes,DAMIEN_CARD];
+const getCard=id=>allCards().find(x=>x.id===id);
+const COSTS={common:100,rare:250,legendary:500,god:0};
+const SELL_PRICE={common:50,rare:125,legendary:250,god:0};
+const RARITY_COLORS={common:'var(--muted)',rare:'var(--dc)',legendary:'var(--purple)',god:'var(--god)'};
+
+let xp=500,owned=[],votes={},votedHeroes=new Set(),shopFilter='all',voteFilter='all',selectedFighter=null,adminPassword='damien2024';
+let codes=[
+  {code:'DAMIEN2024',type:'xp',value:300},
+  {code:'MARVELROCKS',type:'card',value:11},
+  {code:'DCFOREVER',type:'card',value:22},
+  {code:'LEGENDARY1',type:'xp',value:1000},
+  {code:'DEMOSLAY',type:'damien',value:99},
+];
+let usedCodes=new Set(),toastTimer=null,countdownTimer=null;
+let factHero=null,factIdx=0;
+
+// ---- FACT PANEL ----
+function openFactPanel(h){
+  factHero=h; factIdx=0;
+  const facts=h.damienCard?DAMIEN_FACTS:(HERO_FACTS[h.id]||["This hero is full of mysteries!"]);
+  const rarCol=RARITY_COLORS[h.rarity];
+  document.getElementById('fp-emoji').textContent=h.emoji;
+  document.getElementById('fp-name').textContent=h.name;
+  document.getElementById('fp-name').style.color=h.damienCard?'var(--god)':rarCol;
+  document.getElementById('fp-alias').textContent=h.alias;
+  document.getElementById('fp-power').textContent='Power: '+(h.damienCard?'∞ GODLIKE':getPower(h));
+  renderFactCards(facts, 0, null);
+  renderDots(facts.length, 0);
+  document.getElementById('fp-prev').disabled=true;
+  document.getElementById('fp-next').disabled=facts.length<=1;
+  document.getElementById('fact-backdrop').classList.add('open');
+  document.getElementById('fact-panel').classList.add('open');
+}
+
+function renderFactCards(facts, idx, dir){
+  const area=document.getElementById('fp-card-area');
+  const old=area.querySelector('.fact-card.active');
+  if(old && dir){
+    old.classList.remove('active');
+    old.classList.add(dir==='left'?'left':'right');
+    setTimeout(()=>old.remove(),350);
+  } else if(old){
+    old.remove();
+  }
+  const card=document.createElement('div');
+  card.className='fact-card '+(dir? (dir==='left'?'right':'left') :'active');
+  card.innerHTML=`<div class="fact-number">Fact ${idx+1} of ${facts.length}</div><div class="fact-text">${facts[idx]}</div>`;
+  area.appendChild(card);
+  if(dir) requestAnimationFrame(()=>requestAnimationFrame(()=>card.classList.replace(dir==='left'?'right':'left','active')));
+}
+
+function renderDots(total, idx){
+  document.getElementById('fp-dots').innerHTML=Array.from({length:total},(_,i)=>`<div class="fact-dot${i===idx?' active':''}"></div>`).join('');
+}
+
+function factNav(dir){
+  const facts=factHero.damienCard?DAMIEN_FACTS:(HERO_FACTS[factHero.id]||["This hero is full of mysteries!"]);
+  factIdx=Math.max(0,Math.min(facts.length-1,factIdx+dir));
+  renderFactCards(facts, factIdx, dir>0?'left':'right');
+  renderDots(facts.length, factIdx);
+  document.getElementById('fp-prev').disabled=factIdx===0;
+  document.getElementById('fp-next').disabled=factIdx===facts.length-1;
+}
+
+function closeFactPanel(){
+  document.getElementById('fact-backdrop').classList.remove('open');
+  document.getElementById('fact-panel').classList.remove('open');
+}
+
+function getPower(h){if(h.damienCard)return Number.MAX_SAFE_INTEGER;return h.basePower+Math.floor((votes[h.id]||0)*0.5);}
+function updateUI(){document.getElementById('xp-display').textContent=xp>1e15?'∞':xp.toLocaleString();document.getElementById('cards-display').textContent=owned.length;}
+function goHome(){showSection('shop',document.getElementById('nav-shop'));}
+function showToast(msg,type='info',dur=3000){const t=document.getElementById('toast');clearTimeout(toastTimer);t.textContent=msg;t.className='toast show '+type;toastTimer=setTimeout(()=>{t.className='toast '+type;},dur);}
+
+function showSection(id,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='shop')renderShop();
+  if(id==='collection')renderCollection();
+  if(id==='battle'){selectedFighter=null;renderPickGrid();document.getElementById('battle-result-wrap').innerHTML='';}
+  if(id==='vote')renderVote();
+}
+
+function setShopFilter(f,btn){shopFilter=f;document.querySelectorAll('#sec-shop .filter-btn').forEach(b=>b.className='filter-btn');btn.className='filter-btn active-'+f;renderShop();}
+
+function renderShop(){
+  const g=document.getElementById('shop-grid');
+  g.innerHTML=heroes.filter(h=>shopFilter==='all'||h.universe===shopFilter).map(h=>{
+    const cost=COSTS[h.rarity],isOwned=owned.includes(h.id),canAfford=xp>=cost,pow=getPower(h);
+    const stars=Math.round(pow/20),starStr='★'.repeat(Math.min(stars,5))+'☆'.repeat(Math.max(0,5-stars));
+    const rarCol=RARITY_COLORS[h.rarity];
+    return `<div class="shop-card ${h.universe} ${isOwned?'owned':''}">
+      ${h.rarity!=='common'?`<span class="rare-badge" style="background:${rarCol}">${h.rarity.toUpperCase()}</span>`:''}
+      <span class="shop-emoji">${h.emoji}</span>
+      <div class="shop-name">${h.name}</div>
+      <div class="shop-stars">${starStr}</div>
+      <div class="shop-cost">⚡ ${cost} XP</div>
+      <div style="font-size:0.68rem;color:var(--muted);margin-bottom:0.35rem;">Power: ${pow}</div>
+      ${isOwned?'<span class="owned-tag">✓ OWNED</span>':`<button class="buy-btn" ${canAfford?'':'disabled'} onclick="buyCard(${h.id})">${canAfford?'Buy!':'Need XP'}</button>`}
+    </div>`;
+  }).join('');
+}
+
+function buyCard(id){
+  const h=getCard(id),cost=COSTS[h.rarity];
+  if(xp<cost||owned.includes(id))return;
+  xp-=cost;owned.push(id);updateUI();renderShop();
+  // Show fact panel after buying!
+  setTimeout(()=>openFactPanel(h),300);
+}
+
+function renderCollection(){
+  const g=document.getElementById('coll-grid');
+  if(!owned.length){g.innerHTML='<div class="empty-coll">No cards yet!<br>Head to the Shop to buy some.</div>';return;}
+  g.innerHTML=owned.map(id=>{
+    const h=getCard(id),pow=getPower(h),rarCol=RARITY_COLORS[h.rarity];
+    if(h.damienCard)return `<div class="coll-card god" style="border-color:var(--god);cursor:pointer;" onclick="openFactPanel(getCard(99))">
+      <span class="rare-badge" style="background:var(--god);">GOD</span>
+      <span class="shop-emoji god-glow" style="font-size:2.5rem;">${h.emoji}</span>
+      <div class="shop-name" style="color:var(--god);">${h.name}</div>
+      <div class="coll-rating">Power: ∞</div>
+      <div style="font-size:0.65rem;color:var(--god);margin-top:0.3rem;">TAP FOR FACTS 👑</div>
+    </div>`;
+    return `<div class="coll-card ${h.universe}" style="cursor:pointer;" onclick="openFactPanel(getCard(${h.id}))">
+      ${h.rarity!=='common'?`<span class="rare-badge" style="background:${rarCol}">${h.rarity.toUpperCase()}</span>`:''}
+      <span class="shop-emoji">${h.emoji}</span>
+      <div class="shop-name">${h.name}</div>
+      <div class="coll-rating">Power: ${pow} ⚡</div>
+      <div style="font-size:0.68rem;color:${rarCol};margin-top:0.15rem;font-weight:600;">${h.rarity.toUpperCase()}</div>
+      <button class="sell-btn" onclick="event.stopPropagation();sellCard(${h.id})">Sell +${SELL_PRICE[h.rarity]} XP</button>
+    </div>`;
+  }).join('');
+}
+
+function sellCard(id){
+  const h=getCard(id);if(h.damienCard){showToast("Can't sell Damien! 😄",'bad');return;}
+  if(!owned.includes(id))return;
+  owned=owned.filter(x=>x!==id);xp+=SELL_PRICE[h.rarity];updateUI();renderCollection();
+  if(selectedFighter===id)selectedFighter=null;
+  showToast(`Sold ${h.emoji} ${h.name} for +${SELL_PRICE[h.rarity]} XP!`,'info');
+}
+
+function setVoteFilter(f,btn){voteFilter=f;document.querySelectorAll('#sec-vote .filter-btn').forEach(b=>b.className='filter-btn');btn.className='filter-btn active-'+f;renderVote();}
+
+function renderVote(){
+  const g=document.getElementById('vote-grid');
+  g.innerHTML=heroes.filter(h=>voteFilter==='all'||h.universe===voteFilter).map(h=>{
+    const hasVoted=votedHeroes.has(h.id);
+    return `<div class="vote-card ${h.universe} ${hasVoted?'voted':''}" onclick="voteHero(${h.id})">
+      <span class="shop-emoji">${h.emoji}</span>
+      <div class="shop-name">${h.name}</div>
+      <div class="vote-count">${votes[h.id]||0} votes${hasVoted?' ✓':''}</div>
+    </div>`;
+  }).join('');
+}
+
+function voteHero(id){
+  if(votedHeroes.has(id)){showToast('Already voted!','bad');return;}
+  votedHeroes.add(id);votes[id]=(votes[id]||0)+1;xp+=50;updateUI();renderVote();
+  showToast('+50 XP for voting! ⭐','good');
+}
+
+function renderPickGrid(){
+  const g=document.getElementById('pick-grid');
+  if(!owned.length){g.innerHTML='<div style="color:var(--muted);text-align:center;padding:1rem;grid-column:1/-1">Buy some cards first!</div>';return;}
+  g.innerHTML=owned.map(id=>{
+    const h=getCard(id),pow=getPower(h),isDamien=h.damienCard;
+    return `<div class="pick-card ${h.universe||'god'} ${selectedFighter===id?'chosen':''}" onclick="selectFighter(${id})" style="${isDamien?'border-color:var(--god);':''}">
+      <span class="pick-emoji">${h.emoji}</span>
+      <div class="pick-name" style="${isDamien?'color:var(--god);':''}">${h.name}</div>
+      <div class="pick-pow" style="${isDamien?'color:var(--god);':''}">⚡ ${isDamien?'∞':pow}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectFighter(id){
+  selectedFighter=id;const h=getCard(id),pow=getPower(h),isDamien=h.damienCard;
+  document.getElementById('player-slot').innerHTML=`<span class="battle-slot-emoji">${h.emoji}</span><div class="battle-slot-name" style="${isDamien?'color:var(--god);':''}">${h.name}</div><div class="battle-slot-power" style="${isDamien?'color:var(--god);':''}">⚡ ${isDamien?'∞ GODLIKE':pow}</div>`;
+  document.getElementById('player-slot').classList.add('filled');
+  document.getElementById('fight-btn').disabled=false;
+  document.getElementById('battle-result-wrap').innerHTML='';
+  document.getElementById('enemy-slot').innerHTML='<div style="color:var(--muted);font-size:0.85rem;">Ready!</div>';
+  document.getElementById('enemy-slot').classList.remove('filled');
+  renderPickGrid();
+}
+
+function doFight(){
+  if(!selectedFighter)return;
+  const playerH=getCard(selectedFighter),isDamien=playerH.damienCard;
+  const enemyH=heroes[Math.floor(Math.random()*heroes.length)];
+  const enemyPow=getPower(enemyH);
+  document.getElementById('enemy-slot').innerHTML=`<span class="battle-slot-emoji">${enemyH.emoji}</span><div class="battle-slot-name">${enemyH.name}</div><div class="battle-slot-power">⚡ ${enemyPow}</div>`;
+  document.getElementById('enemy-slot').classList.add('filled');
+  if(isDamien){
+    xp+=500;
+    document.getElementById('battle-result-wrap').innerHTML=`<div class="battle-result win" style="border-color:var(--god);color:var(--god);">👑 DAMIEN WINS INSTANTLY! +500 XP</div><div class="exit-row"><button class="exit-btn" onclick="clearBattle()">✕ Clear</button><button class="back-btn" onclick="goHome()">🏠 Shop</button></div>`;
+    selectedFighter=null;document.getElementById('fight-btn').disabled=true;updateUI();renderPickGrid();
+    showToast('👑 DAMIEN IS UNBEATABLE! +500 XP','god',4000);return;
+  }
+  const playerPow=getPower(playerH);
+  const pRoll=playerPow+Math.floor(Math.random()*20)-10;
+  const eRoll=enemyPow+Math.floor(Math.random()*20)-10;
+  let cls,msg,tMsg,tType,lost=false;
+  if(pRoll>eRoll){xp+=100;cls='win';msg=`🏆 YOU WIN! +100 XP<br><span style="font-size:0.82rem;font-family:'Barlow',sans-serif;">${playerH.name}(${pRoll}) beat ${enemyH.name}(${eRoll})</span>`;tMsg='🏆 You won! +100 XP';tType='good';}
+  else if(pRoll<eRoll){cls='lose';lost=true;msg=`💀 YOU LOST!<br><span style="font-size:0.82rem;font-family:'Barlow',sans-serif;">${enemyH.name}(${eRoll}) beat ${playerH.name}(${pRoll})</span>`;tMsg='💀 You lost! Give a card...';tType='bad';}
+  else{xp+=25;cls='draw';msg='🤝 DRAW! +25 XP';tMsg='🤝 Draw!';tType='info';}
+  selectedFighter=null;document.getElementById('fight-btn').disabled=true;updateUI();renderPickGrid();showToast(tMsg,tType);
+  if(lost&&owned.length>0){
+    const nonDamien=owned.filter(id=>!getCard(id).damienCard);
+    if(!nonDamien.length){document.getElementById('battle-result-wrap').innerHTML=`<div class="battle-result ${cls}">${msg}</div><div style="text-align:center;color:var(--god);font-family:'Bebas Neue',cursive;font-size:1rem;margin-top:0.5rem;">👑 Only Damien — untouchable!</div><div class="exit-row"><button class="exit-btn" onclick="clearBattle()">✕ Clear</button><button class="back-btn" onclick="goHome()">🏠 Shop</button></div>`;return;}
+    const pickIds=shuffleArr(nonDamien).slice(0,Math.min(3,nonDamien.length));
+    document.getElementById('battle-result-wrap').innerHTML=`<div class="battle-result ${cls}">${msg}</div><div class="forfeit-overlay"><div class="forfeit-title">💀 Give Up a Card!</div><div class="forfeit-sub">Pick one card to hand over to your opponent.</div><div class="forfeit-grid">${pickIds.map(id=>{const h=getCard(id);return `<div class="forfeit-card ${h.universe}" onclick="forfeitCard(${h.id})"><span style="font-size:1.8rem;display:block;">${h.emoji}</span><div style="font-family:'Bebas Neue',cursive;font-size:0.82rem;">${h.name}</div><div style="font-size:0.68rem;color:var(--muted);">Power: ${getPower(h)}</div></div>`;}).join('')}</div></div>`;
+  } else {
+    document.getElementById('battle-result-wrap').innerHTML=`<div class="battle-result ${cls}">${msg}</div><div class="exit-row"><button class="exit-btn" onclick="clearBattle()">✕ Clear</button><button class="back-btn" onclick="goHome()">🏠 Shop</button></div>`;
+  }
+}
+
+function shuffleArr(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function forfeitCard(id){
+  const h=getCard(id);owned=owned.filter(x=>x!==id);updateUI();
+  document.getElementById('battle-result-wrap').innerHTML=`<div class="battle-result lose">💀 You gave up ${h.emoji} ${h.name}!</div><div class="exit-row"><button class="exit-btn" onclick="clearBattle()">✕ Clear</button><button class="back-btn" onclick="goHome()">🏠 Shop</button></div>`;
+  showToast(`😢 Lost ${h.name}!`,'bad');renderPickGrid();
+}
+
+function clearBattle(){
+  document.getElementById('battle-result-wrap').innerHTML='';
+  document.getElementById('player-slot').innerHTML='<div style="color:var(--muted);font-size:0.85rem;">Pick a card below</div>';
+  document.getElementById('player-slot').classList.remove('filled');
+  document.getElementById('enemy-slot').innerHTML='<div style="color:var(--muted);font-size:0.85rem;">Waiting...</div>';
+  document.getElementById('enemy-slot').classList.remove('filled');
+  selectedFighter=null;document.getElementById('fight-btn').disabled=true;
+}
+
+let mpWaiting=false;
+function joinMatch(){
+  const code=document.getElementById('mp-code-input').value.trim();
+  if(!code){showToast('Type a match code!','bad');return;}
+  if(!owned.length){showToast('Buy some cards first!','bad');return;}
+  document.getElementById('mp-result-wrap').innerHTML='';mpWaiting=true;
+  document.getElementById('mp-status').innerHTML=`<span class="mp-waiting">⏳ Waiting for friend: ${code}...</span>`;
+  setTimeout(()=>{if(!mpWaiting)return;mpWaiting=false;simulateMP();},3000);
+}
+
+function simulateMP(){
+  const myId=owned[Math.floor(Math.random()*owned.length)],myH=getCard(myId),isDamien=myH.damienCard;
+  const oppH=heroes[Math.floor(Math.random()*heroes.length)];
+  if(isDamien){xp+=500;document.getElementById('mp-status').innerHTML='';document.getElementById('mp-result-wrap').innerHTML=`<div class="mp-result-box" style="border-color:var(--god);color:var(--god);">👑 DAMIEN WINS! +500 XP</div><div class="exit-row"><button class="exit-btn" onclick="clearMP()">✕ Clear</button><button class="back-btn" onclick="goHome()">🏠 Shop</button></div>`;showToast('👑 DAMIEN WINS!','god',4000);updateUI();return;}
+  const myPow=getPower(myH)+Math.floor(Math.random()*15),oppPow=getPower(oppH)+Math.floor(Math.random()*15);
+  let msg,color,tType;
+  if(myPow>oppPow){xp+=150;msg=`🏆 YOU WON! +150 XP<br><small>${myH.name}(${myPow}) beat ${oppH.name}(${oppPow})</small>`;color='var(--green)';tType='good';}
+  else if(myPow<oppPow){msg=`💀 You lost...<br><small>${oppH.name}(${oppPow}) beat ${myH.name}(${myPow})</small>`;color='var(--marvel)';tType='bad';}
+  else{xp+=50;msg='🤝 Draw! +50 XP';color='var(--gold)';tType='info';}
+  document.getElementById('mp-status').innerHTML='';
+  document.getElementById('mp-result-wrap').innerHTML=`<div class="mp-result-box" style="border-color:${color};color:${color};">${msg}</div><div class="exit-row"><button class="exit-btn" onclick="clearMP()">✕ Clear</button><button class="back-btn" onclick="goHome()">🏠 Shop</button></div>`;
+  showToast(msg.replace(/<[^>]+>/g,'').trim(),tType);updateUI();
+}
+
+function clearMP(){document.getElementById('mp-result-wrap').innerHTML='';document.getElementById('mp-status').textContent='';document.getElementById('mp-code-input').value='';}
+
+function showRedeemMsg(msg,type,withCountdown=false){
+  const area=document.getElementById('redeem-result-area');clearInterval(countdownTimer);
+  const btns=`<div class="exit-row"><button class="exit-btn" onclick="clearRedeem()">✕ Clear</button><button class="back-btn" onclick="goHome()">🏠 Shop</button></div>`;
+  if(!withCountdown){area.innerHTML=`<div style="text-align:center;font-size:0.95rem;font-weight:600;margin-top:0.5rem;color:${type==='good'?'var(--green)':type==='god'?'var(--god)':'var(--marvel)'};">${msg}</div>${btns}`;return;}
+  let secs=5;
+  function render(){area.innerHTML=`<div style="text-align:center;font-size:0.95rem;font-weight:600;margin-top:0.5rem;color:var(--marvel);">${msg}</div><div class="countdown-wrap"><div class="countdown-ring"></div><span class="countdown-text">Clearing in ${secs}s...</span></div><div class="exit-row"><button class="exit-btn" onclick="clearRedeem()">✕ Clear Now</button><button class="back-btn" onclick="goHome()">🏠 Shop</button></div>`;}
+  render();countdownTimer=setInterval(()=>{secs--;if(secs<=0){clearInterval(countdownTimer);clearRedeem();}else render();},1000);
+}
+
+function clearRedeem(){clearInterval(countdownTimer);document.getElementById('redeem-result-area').innerHTML='';document.getElementById('redeem-input').value='';}
+
+function redeemCode(){
+  const input=document.getElementById('redeem-input').value.trim().toUpperCase();
+  if(!input){showRedeemMsg('Type a code first!','bad',true);return;}
+  if(usedCodes.has(input)){showRedeemMsg('❌ Already used this code!','bad',true);return;}
+  const code=codes.find(c=>c.code.toUpperCase()===input);
+  if(!code){showRedeemMsg('❌ Wrong code! Try again.','bad',true);return;}
+  usedCodes.add(input);
+  if(code.type==='xp'){xp+=code.value;updateUI();showRedeemMsg(`✅ +${code.value.toLocaleString()} XP added!`,'good');showToast(`+${code.value.toLocaleString()} XP! 🎉`,'good');}
+  else if(code.type==='card'){const h=getCard(code.value);if(h&&!owned.includes(h.id)){owned.push(h.id);updateUI();showRedeemMsg(`✅ Unlocked ${h.emoji} ${h.name}!`,'good');showToast(`Unlocked ${h.emoji} ${h.name}!`,'good');setTimeout(()=>openFactPanel(h),400);}else if(h){xp+=150;updateUI();showRedeemMsg(`✅ Already own ${h.name}! +150 XP.`,'good');}}
+  else if(code.type==='damien'){if(!owned.includes(DAMIEN_CARD.id)){owned.push(DAMIEN_CARD.id);updateUI();showRedeemMsg(`👑 UNLOCKED THE DAMIEN CARD! ∞ POWER!`,'god');showToast('👑 THE DAMIEN CARD IS YOURS!','god',5000);setTimeout(()=>openFactPanel(DAMIEN_CARD),400);}else{showRedeemMsg('👑 You already have the Damien card!','god');}}
+}
+
+function adminLogin(){
+  const pass=document.getElementById('admin-pass-input').value;
+  const res=document.getElementById('admin-login-result');
+  if(pass===adminPassword){document.getElementById('admin-locked').style.display='none';document.getElementById('admin-panel').style.display='block';renderCodeList();}
+  else{res.style.color='var(--marvel)';res.textContent='❌ Wrong password!';setTimeout(()=>{res.textContent='';},5000);}
+}
+
+function exitAdmin(){document.getElementById('admin-panel').style.display='none';document.getElementById('admin-locked').style.display='block';document.getElementById('admin-pass-input').value='';showToast('Logged out ✅','info');}
+function changePass(){const np=document.getElementById('new-pass-input').value.trim();if(!np)return;adminPassword=np;document.getElementById('new-pass-input').value='';showToast('Password changed! ✅','good');}
+
+function renderCodeList(){
+  document.getElementById('code-list').innerHTML=codes.map((c,i)=>`<div class="code-item"><input value="${c.code}" id="ci-code-${i}"/><select id="ci-type-${i}"><option value="xp" ${c.type==='xp'?'selected':''}>XP</option><option value="card" ${c.type==='card'?'selected':''}>Card</option><option value="damien" ${c.type==='damien'?'selected':''}>Damien</option></select><input value="${c.value}" id="ci-val-${i}" style="max-width:70px;"/><button class="del-btn" onclick="deleteCode(${i})">✕</button></div>`).join('');
+}
+function addCodeRow(){codes.push({code:'NEWCODE',type:'xp',value:100});renderCodeList();}
+function deleteCode(i){codes.splice(i,1);renderCodeList();}
+function saveCodes(){codes=Array.from(document.querySelectorAll('.code-item')).map((_,i)=>({code:document.getElementById(`ci-code-${i}`).value.trim().toUpperCase(),type:document.getElementById(`ci-type-${i}`).value,value:parseInt(document.getElementById(`ci-val-${i}`).value)||0}));const res=document.getElementById('save-result');res.style.color='var(--green)';res.textContent='✅ Saved!';setTimeout(()=>{res.textContent='';},2000);}
+
+updateUI();renderShop();
+</script>
